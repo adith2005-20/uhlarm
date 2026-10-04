@@ -167,11 +167,13 @@ private struct StarField: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: reduceMotion)) { timeline in
+        let isStill = reduceMotion
+        let unit = unit
+        return TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: isStill)) { timeline in
             Canvas { context, _ in
                 let t = timeline.date.timeIntervalSinceReferenceDate
                 for (index, star) in Star.all.enumerated() {
-                    let twinkle = reduceMotion ? 0.6 : 0.5 - 0.5 * cos(2 * .pi * t / star.period + Double(index) * 1.7)
+                    let twinkle = isStill ? 0.6 : 0.5 - 0.5 * cos(2 * .pi * t / star.period + Double(index) * 1.7)
                     let opacity = 0.35 + 0.55 * twinkle
                     let center = CGPoint(x: star.x * unit.width, y: star.y * unit.height)
                     if star.glow {

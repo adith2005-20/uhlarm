@@ -110,7 +110,8 @@ struct NFCView: View {
     }
 
     private var disc: some View {
-        Image(systemName: symbol)
+        let glowColor = mode == .failed ? Theme.error : Theme.accent
+        return Image(systemName: symbol)
             .font(.system(size: 60, weight: showCheck ? .semibold : .regular))
             .foregroundStyle(iconColor)
             .contentTransition(.symbolEffect(.replace))
@@ -127,7 +128,7 @@ struct NFCView: View {
                 }
             }
             .phaseAnimator(mode == .waiting && !reduceMotion ? [0.0, 1.0] : [0.4]) { content, glow in
-                content.shadow(color: (mode == .failed ? Theme.error : Theme.accent).opacity(0.22 + 0.28 * glow),
+                content.shadow(color: glowColor.opacity(0.22 + 0.28 * glow),
                                radius: 22 + 34 * glow)
             } animation: { _ in
                 .easeInOut(duration: 1.75)

@@ -1,4 +1,3 @@
-import ActivityKit
 import AVFoundation
 import Foundation
 
@@ -46,14 +45,6 @@ enum SoundLibrary {
 
     static func sound(id: String) -> AlarmSound {
         all().first { $0.id == id } ?? builtIns[0]
-    }
-
-    static func alertSound(for id: String) -> AlertConfiguration.AlertSound {
-        let sound = sound(id: id)
-        guard let fileName = sound.fileName,
-              let url = url(for: sound),
-              FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return .default }
-        return .named(fileName)
     }
 
     // MARK: Built-ins

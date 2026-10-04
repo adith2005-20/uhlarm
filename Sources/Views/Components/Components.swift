@@ -124,8 +124,10 @@ struct Shake: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
-        content.keyframeAnimator(initialValue: CGFloat(0), trigger: trigger) { view, x in
-            view.offset(x: reduceMotion ? 0 : x)
+        let isStill = reduceMotion
+        let amplitude = amplitude
+        return content.keyframeAnimator(initialValue: CGFloat(0), trigger: trigger) { view, x in
+            view.offset(x: isStill ? 0 : x)
         } keyframes: { _ in
             KeyframeTrack {
                 LinearKeyframe(-amplitude, duration: 0.09)

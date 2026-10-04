@@ -13,19 +13,22 @@ struct WakeMetadata: AlarmMetadata {
 final class AlarmService {
     static let shared = AlarmService()
 
-    private let manager = AlarmManager.shared
+    /// When an alarm rings, as plain Sendable values (AlarmKit's own types aren't Sendable).
+    private enum RingTime: Sendable {
+        case daily(hour: Int, minute: Int, weekdays: [Int])
+        case at(Date)
+    }
 
-    var isAuthorized: Bool { manager.authorizationState == .authorized }
+    var isAuthorized: Bool { AlarmManager.shared.authorizationState == .authorized }
 
     func requestAuthorization() async -> Bool {
-        switch manager.authorizationState {
+        switch AlarmManager.shared.authorizationState {
         case .authorized:
             return true
         case .denied:
             return false
         case .notDetermined:
-            let state = try? await manager.requestAuthorization()
-            return state == .authorized
+            return await Self.askForAuthorization()
         @unknown default:
             return false
         }
@@ -33,25 +36,21 @@ final class AlarmService {
 
     /// Schedules (or reschedules) a user alarm under its own ID.
     func sync(_ alarm: AlarmSnapshot) async throws {
-        try? manager.cancel(id: alarm.id)
+        cancel(alarm.id)
         guard alarm.isEnabled else { return }
-        let repeats: Alarm.Schedule.Relative.Recurrence = alarm.isRepeating
-            ? .weekly(alarm.weekdays.sorted().compactMap(Weekdays.localeWeekday))
-            : .never
-        let relative = Alarm.Schedule.Relative(
-            time: Alarm.Schedule.Relative.Time(hour: alarm.hour, minute: alarm.minute),
-            repeats: repeats
+        try await Self.schedule(
+            alarm,
+            ringID: alarm.id,
+            time: .daily(hour: alarm.hour, minute: alarm.minute, weekdays: alarm.weekdays),
+            soundFile: soundFile(for: alarm)
         )
-        _ = try await manager.schedule(id: alarm.id,
-                                       configuration: configuration(for: alarm, ringID: alarm.id, schedule: .relative(relative)))
     }
 
     /// A one-off ring for the re-ring workaround and the Wake Up Check. Returns its ring ID.
     func scheduleOneShot(for alarm: AlarmSnapshot, at date: Date) async -> UUID? {
         let ringID = UUID()
         do {
-            _ = try await manager.schedule(id: ringID,
-                                           configuration: configuration(for: alarm, ringID: ringID, schedule: .fixed(date)))
+            try await Self.schedule(alarm, ringID: ringID, time: .at(date), soundFile: soundFile(for: alarm))
             return ringID
         } catch {
             return nil
@@ -59,20 +58,20 @@ final class AlarmService {
     }
 
     func cancel(_ id: UUID) {
-        try? manager.cancel(id: id)
+        try? AlarmManager.shared.cancel(id: id)
     }
 
     func stop(_ id: UUID) {
-        try? manager.stop(id: id)
+        try? AlarmManager.shared.stop(id: id)
     }
 
     func alertingIDs() -> [UUID] {
-        ((try? manager.alarms) ?? []).filter { $0.state == .alerting }.map(\.id)
+        ((try? AlarmManager.shared.alarms) ?? []).filter { $0.state == .alerting }.map(\.id)
     }
 
     /// Brings AlarmKit in line with the saved alarms, leaving pending re-rings alone.
     func resync(_ alarms: [AlarmSnapshot], keeping pending: Set<UUID>) async {
-        let scheduled = Set(((try? manager.alarms) ?? []).map(\.id))
+        let scheduled = Set(((try? AlarmManager.shared.alarms) ?? []).map(\.id))
         let wanted = Set(alarms.filter(\.isEnabled).map(\.id))
         for id in scheduled where !wanted.contains(id) && !pending.contains(id) {
             cancel(id)
@@ -82,8 +81,37 @@ final class AlarmService {
         }
     }
 
-    private func configuration(for alarm: AlarmSnapshot, ringID: UUID,
-                               schedule: Alarm.Schedule) -> AlarmManager.AlarmConfiguration<WakeMetadata> {
+    /// The sound's file name in Library/Sounds, or nil for the system sound (or a missing file).
+    private func soundFile(for alarm: AlarmSnapshot) -> String? {
+        let sound = SoundLibrary.sound(id: alarm.soundID)
+        guard let fileName = sound.fileName, let url = SoundLibrary.url(for: sound),
+              FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
+        return fileName
+    }
+
+    // MARK: AlarmKit calls (off the main actor)
+
+    private nonisolated static func askForAuthorization() async -> Bool {
+        let state = try? await AlarmManager.shared.requestAuthorization()
+        return state == .authorized
+    }
+
+    private nonisolated static func schedule(_ alarm: AlarmSnapshot, ringID: UUID, time: RingTime,
+                                             soundFile: String?) async throws {
+        let schedule: Alarm.Schedule
+        switch time {
+        case .daily(let hour, let minute, let weekdays):
+            let repeats: Alarm.Schedule.Relative.Recurrence = weekdays.isEmpty
+                ? .never
+                : .weekly(weekdays.sorted().compactMap(Weekdays.localeWeekday))
+            schedule = .relative(Alarm.Schedule.Relative(
+                time: Alarm.Schedule.Relative.Time(hour: hour, minute: minute),
+                repeats: repeats
+            ))
+        case .at(let date):
+            schedule = .fixed(date)
+        }
+
         let silence = AlarmButton(text: "Silence 1 min", textColor: .white, systemImageName: "speaker.slash.fill")
         let prove = AlarmButton(text: "Prove you're awake", textColor: .white, systemImageName: alarm.method.scanSymbol)
         let alert = AlarmPresentation.Alert(
@@ -97,12 +125,14 @@ final class AlarmService {
             metadata: WakeMetadata(parentID: alarm.id, label: alarm.displayLabel),
             tintColor: Theme.alarmTint
         )
-        return .alarm(
+        let sound: AlertConfiguration.AlertSound = soundFile.map { .named($0) } ?? .default
+        let configuration = AlarmManager.AlarmConfiguration<WakeMetadata>.alarm(
             schedule: schedule,
             attributes: attributes,
             stopIntent: StopAlarmIntent(ringID: ringID),
             secondaryIntent: OpenAlarmIntent(ringID: ringID),
-            sound: SoundLibrary.alertSound(for: alarm.soundID)
+            sound: sound
         )
+        _ = try await AlarmManager.shared.schedule(id: ringID, configuration: configuration)
     }
 }

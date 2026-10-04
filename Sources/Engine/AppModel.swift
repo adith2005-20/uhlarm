@@ -11,6 +11,13 @@ enum RingPhase: Equatable {
     case wakeCheck(Date)
 }
 
+enum AlarmLock: Equatable {
+    /// Ringing or silenced, and not yet proven.
+    case ringing
+    /// Rings within the next few minutes.
+    case ringsSoon
+}
+
 struct TagEvent: Equatable {
     let id = UUID()
     let name: String
@@ -83,8 +90,8 @@ final class AppModel {
     static let shared = AppModel()
 
     var session: RingSession?
-    /// Alarms that are ringing or silenced and not yet proven: they can't be switched off, edited or deleted.
-    var lockedAlarmIDs: Set<UUID> = []
+    /// Alarms that can't be switched off, edited or deleted right now, and why.
+    var alarmLocks: [UUID: AlarmLock] = [:]
     /// The latest tag reported by the Shortcuts automation, for the tag tester and registration.
     var lastTag: TagScan?
 

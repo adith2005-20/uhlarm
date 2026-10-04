@@ -62,6 +62,7 @@ struct EditAlarmView: View {
     @State private var isSaving = false
     @State private var showDenied = false
     @State private var confirmDelete = false
+    @State private var showLocked = false
 
     init(draft: AlarmDraft) {
         _draft = State(initialValue: draft)
@@ -173,6 +174,11 @@ struct EditAlarmView: View {
             } message: {
                 Text("Your alarm is saved, but it can't ring until you allow uhlarm to schedule alarms in Settings.")
             }
+            .alert("Alarm locked", isPresented: $showLocked) {
+                Button("OK") { dismiss() }
+            } message: {
+                Text("This alarm is ringing or rings in less than \(Int(RingEngine.preRingLock / 60)) minutes. It can't be changed until you've proven you're up.")
+            }
             .confirmationDialog("Delete this alarm?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete Alarm", role: .destructive) { delete() }
             }
@@ -201,7 +207,10 @@ struct EditAlarmView: View {
     }
 
     private func save() {
-        guard !RingEngine.shared.isUnfinished(draft.id) else { return dismiss() }
+        guard !RingEngine.shared.isLocked(draft.id) else {
+            showLocked = true
+            return
+        }
         isSaving = true
         let item = Library.alarm(draft.id) ?? {
             let created = AlarmItem(id: draft.id, hour: draft.hour, minute: draft.minute)
@@ -235,7 +244,11 @@ struct EditAlarmView: View {
     }
 
     private func delete() {
-        if let item = Library.alarm(draft.id), !RingEngine.shared.isUnfinished(item.id) {
+        guard !RingEngine.shared.isLocked(draft.id) else {
+            showLocked = true
+            return
+        }
+        if let item = Library.alarm(draft.id) {
             AlarmService.shared.cancel(item.id)
             context.delete(item)
             try? context.save()

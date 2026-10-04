@@ -21,7 +21,8 @@
 
 - **Prove you're up.** Turn alarms off by scanning a QR code, any product barcode, or tapping an NFC tag
   that lives somewhere away from your bed.
-- **No easy way out.** Silencing the alarm only buys 15 seconds before it rings again.
+- **No easy way out.** Silencing the alarm only buys 15 seconds before it rings again, and alarms can't be
+  switched off, edited or deleted from 5 minutes before they ring until you've proven you're up.
 - **Wake Up Check.** Five minutes after you turn it off, uhlarm makes sure you didn't go back to sleep.
 - **Emergency unlock.** Lost the code? Wait 90 seconds, type a sentence and hold to turn off.
 - **Rings through Silent mode**, powered by AlarmKit.

@@ -13,6 +13,8 @@ final class RingEngine {
     static let keepAliveLead: TimeInterval = 20
     /// How often the ringing flow pushes that re-ring back. Must stay well under `keepAliveLead`.
     static let keepAliveInterval: TimeInterval = 6
+    /// Alarms are locked this long before they ring, so they can't be switched off at the last minute.
+    static let preRingLock: TimeInterval = 5 * 60
     static let wakeCheckDelay: TimeInterval = 5 * 60
     static let wakeCheckWindow: TimeInterval = 60
 
@@ -78,9 +80,25 @@ final class RingEngine {
         return service.alertingIDs().contains { WakeStore.parent(of: $0) == parent && !WakeStore.isSatisfied($0) }
     }
 
+    /// Why this alarm can't be switched off, edited or deleted right now, if it can't.
+    func lock(for parent: UUID) -> AlarmLock? {
+        if isUnfinished(parent) { return .ringing }
+        if let alarm = Library.snapshot(for: parent), alarm.isEnabled,
+           let next = NextAlarm.date(for: alarm, after: .now),
+           next.timeIntervalSinceNow <= Self.preRingLock {
+            return .ringsSoon
+        }
+        return nil
+    }
+
+    func isLocked(_ parent: UUID) -> Bool { lock(for: parent) != nil }
+
     func refreshLocks() {
-        let locked = Set(Library.alarms().map(\.id).filter(isUnfinished))
-        if AppModel.shared.lockedAlarmIDs != locked { AppModel.shared.lockedAlarmIDs = locked }
+        var locks: [UUID: AlarmLock] = [:]
+        for alarm in Library.alarms() {
+            if let lock = lock(for: alarm.id) { locks[alarm.id] = lock }
+        }
+        if AppModel.shared.alarmLocks != locks { AppModel.shared.alarmLocks = locks }
     }
 
     /// Opening the app while an alarm is silenced (re-ring booked) or still ringing goes straight to

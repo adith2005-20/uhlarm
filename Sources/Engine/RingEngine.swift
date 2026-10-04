@@ -47,6 +47,37 @@ final class RingEngine {
         AppModel.shared.beginRing(parentID: parent, ringID: ringID)
     }
 
+    /// Opening the app while an alarm is silenced (re-ring booked) or still ringing goes straight to
+    /// proving you're up, so the app is never a way around the alarm.
+    func resumeUnfinishedAlarm() {
+        let model = AppModel.shared
+        guard model.session == nil else { return }
+        let known = service.knownIDs()
+        let alerting = service.alertingIDs()
+        let wakeChecks = WakeStore.wakeChecks()
+
+        // Silenced: a re-ring is booked and hasn't been dealt with. (A Wake Up Check's backup is handled
+        // by the Wake Up Check itself.)
+        if let pending = WakeStore.pendingRings().first(where: { entry in
+            wakeChecks[entry.parent] == nil && known.contains(entry.ring) && !WakeStore.isSatisfied(entry.ring)
+        }) {
+            resume(parent: pending.parent, ringID: pending.ring, stopping: alerting.contains(pending.ring))
+            return
+        }
+        // Ringing right now, but opened from the Home Screen instead of the alert.
+        if let ringID = alerting.first(where: { !WakeStore.isSatisfied($0) }) {
+            resume(parent: WakeStore.parent(of: ringID), ringID: ringID, stopping: true)
+        }
+    }
+
+    private func resume(parent: UUID, ringID: UUID, stopping: Bool) {
+        if stopping { service.stop(ringID) }
+        Library.disableIfOneShot(parent)
+        let alarm = Library.snapshot(for: parent) ?? .placeholder(id: parent)
+        DiagnosticsLog.add("Opened with alarm unfinished (ring \(DiagnosticsLog.short(ringID))), asking for proof")
+        AppModel.shared.beginRing(parentID: parent, ringID: ringID, phase: alarm.hasCode ? .verify : .fallback)
+    }
+
     // MARK: Ringing flow
 
     func keepAlive(_ session: RingSession) async {

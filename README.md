@@ -37,7 +37,7 @@
 2. **Create an alarm** and choose which code turns it off.
 3. **When it rings**, tap **Prove you're awake**, then scan the code or tap the tag.
    Tapping **Silence 15 sec** instead quiets it briefly, then it rings again.
-4. **Good morning.** Five minutes later, a Wake Up Check notification asks if you're still up. Tap it and press **I'm up** within a minute, or the alarm returns.
+4. **You're up.** Five minutes later, a Wake Up Check notification asks if you're still up. Tap it and press **I'm up** within a minute, or the alarm returns.
 
 ## Stop methods
 

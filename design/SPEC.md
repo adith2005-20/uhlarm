@@ -61,11 +61,11 @@ Radii: cards 28, sheet 38, grouped sections 24, buttons are capsules.
 | 80–300 ms | Snap | 3 white rings burst from the top edge, 80 ms apart, scale 0.1 → 7 | scaleEffect(anchor: .top) |
 | 300–600 ms | Ripple | rings sweep past, disc wobbles to 1.06, wave icon dissolves | .spring(duration: 0.35, bounce: 0.15) |
 | 600–900 ms | Morph | checkmark replaces the wave; sunrise fades, calm sky fades in | .contentTransition(.symbolEffect(.replace)) |
-| 1200 ms | Settled | calm sky, white check, "Alarm off / Good morning" | glassEffectID("disc", in: ns) → 06 |
+| 1200 ms | Settled | calm sky, white check, "Alarm off / You're up" | glassEffectID("disc", in: ns) → 06 |
 
-**06 Dismissed (dawn).** Glass disc (140 pt) with check, "Good morning", "Alarm off at 6:34 AM", glass pill "Wake Up Check in 5 minutes", accent "Done" button.
+**06 Dismissed (dawn by day, night after 7 PM).** Glass disc (140 pt) with check, "You're up", "Alarm off at 6:34 AM", glass pill "Wake Up Check in 5 minutes", accent "Done" button.
 
-**07 Wake Up Check (dawn).** "Wake Up Check / Still up?", glass disc (240 pt) with a countdown ring (accent, 8 pt) and "0:48", the line "Tap before the timer ends, or the alarm rings again.", accent "I'm up" (76 pt). No answer → re-ring with the same stop method.
+**07 Wake Up Check (dawn by day, night after 7 PM).** "Wake Up Check / Still up?", glass disc (240 pt) with a countdown ring (accent, 8 pt) and "0:48", the line "Tap before the timer ends, or the alarm rings again.", accent "I'm up" (76 pt). No answer → re-ring with the same stop method.
 
 **08 Lost-code fallback (night).** Glass step bar: Wait 90 s ✓ · Type · Hold 3 s. Glass card: "Type this sentence" + the sentence + a text field (paste disabled). Note: "Paste is off. The alarm keeps ringing, quieter, until you finish." Disabled glass "Hold to turn off" (lock icon) until the sentence matches.
 

@@ -48,6 +48,7 @@ struct RootView: View {
         .task {
             await SoundLibrary.installBuiltIns()
             await RingEngine.shared.resyncAll()
+            RingEngine.shared.resumeUnfinishedAlarm()
         }
         .task {
             while !Task.isCancelled {
@@ -56,7 +57,10 @@ struct RootView: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { model.checkPendingWakeChecks() }
+            if phase == .active {
+                model.checkPendingWakeChecks()
+                RingEngine.shared.resumeUnfinishedAlarm()
+            }
         }
         .onOpenURL { url in
             // uhlarm://verify?tag=Bathroom%20mirror — for tags that open a URL instead of a shortcut.

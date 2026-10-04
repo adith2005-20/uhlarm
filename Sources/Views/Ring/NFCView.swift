@@ -7,7 +7,7 @@ struct NFCView: View {
     let event: TagEvent?
     var closeSymbol = "chevron.down"
     var successTitle = "Alarm off"
-    var successSubtitle = "Good morning"
+    var successSubtitle = "You're up"
     let onClose: () -> Void
     let onSuccessFinished: () -> Void
     var onMissing: (() -> Void)?

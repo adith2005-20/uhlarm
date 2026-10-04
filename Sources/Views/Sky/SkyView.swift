@@ -5,7 +5,7 @@ enum SkyStyle {
     case night
     /// Ringing: a sunrise breaking through warm clouds (night or dawn by color scheme).
     case ringing
-    /// Success and Wake Up Check: full morning.
+    /// Success and Wake Up Check: the sun up (a low glow when shown at night).
     case dawn
     /// Emergency unlock: night with a low, dim sun.
     case fallback
@@ -17,7 +17,7 @@ struct SkyView: View {
     var style: SkyStyle
     /// Ringing only: how far the sunrise has come (0.55 at first ring → 1 after five minutes).
     var intensity: Double = 1
-    /// Fades the scene into the calm morning blue after an NFC success.
+    /// Fades the scene into the calm blue after an NFC success.
     var calm: Double = 0
 
     @Environment(\.colorScheme) private var colorScheme
@@ -33,7 +33,7 @@ struct SkyView: View {
                 LinearGradient(colors: [Theme.calmTop, Theme.calmMid, Theme.calmLow], startPoint: .top, endPoint: .bottom)
                     .opacity(calm)
 
-                if isNight && style != .dawn {
+                if isNight {
                     StarField(unit: unit)
                         .opacity(starOpacity)
                 }

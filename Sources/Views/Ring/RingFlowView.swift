@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Full-screen flow for a ringing alarm: Ringing → Scan / NFC (→ Emergency unlock) → Good morning,
+/// Full-screen flow for a ringing alarm: Ringing → Scan / NFC (→ Emergency unlock) → You're up,
 /// plus the Wake Up Check five minutes later.
 struct RingFlowView: View {
     @Bindable var session: RingSession
@@ -59,7 +59,7 @@ struct RingFlowView: View {
         switch session.phase {
         case .ringing: session.isNightRing ? .dark : .light
         case .verify, .fallback: .dark
-        case .success, .wakeCheck: .light
+        case .success, .wakeCheck: session.isNightRing ? .dark : .light
         }
     }
 
@@ -139,7 +139,7 @@ struct RingingView: View {
     }
 }
 
-/// 06 Dismissed (dawn).
+/// 06 Dismissed. Dawn sky by day, night sky at night.
 struct SuccessView: View {
     let session: RingSession
 
@@ -160,7 +160,7 @@ struct SuccessView: View {
                     .opacity(appeared ? 1 : 0)
                     .accessibilityLabel("Alarm dismissed")
 
-                Text("Good morning")
+                Text("You're up")
                     .font(.sora(.largeTitle, .bold))
                     .padding(.top, 40)
                 Text("Alarm off at \(Clock.string(session.completedAt ?? .now))")
@@ -192,7 +192,7 @@ struct SuccessView: View {
     }
 }
 
-/// 07 Wake Up Check (dawn).
+/// 07 Wake Up Check. Dawn sky by day, night sky at night.
 struct WakeCheckView: View {
     let session: RingSession
     let deadline: Date

@@ -71,6 +71,11 @@ final class AlarmService {
         try? AlarmManager.shared.stop(id: id)
     }
 
+    /// IDs AlarmKit still knows about (scheduled, counting down or ringing).
+    func knownIDs() -> Set<UUID> {
+        Set(((try? AlarmManager.shared.alarms) ?? []).map(\.id))
+    }
+
     func alertingIDs() -> [UUID] {
         ((try? AlarmManager.shared.alarms) ?? []).filter { $0.state == .alerting }.map(\.id)
     }

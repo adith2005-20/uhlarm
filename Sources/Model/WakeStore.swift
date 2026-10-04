@@ -45,6 +45,14 @@ enum WakeStore {
         defaults.set(map, forKey: pendingKey)
     }
 
+    /// Every alarm with a re-ring booked, and that ring's ID.
+    static func pendingRings() -> [(parent: UUID, ring: UUID)] {
+        strings(pendingKey).compactMap { key, value -> (parent: UUID, ring: UUID)? in
+            guard let parent = UUID(uuidString: key), let ring = UUID(uuidString: value) else { return nil }
+            return (parent: parent, ring: ring)
+        }
+    }
+
     static func allPending() -> Set<UUID> {
         Set(strings(pendingKey).values.compactMap { UUID(uuidString: $0) })
     }

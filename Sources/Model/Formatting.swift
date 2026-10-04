@@ -77,6 +77,20 @@ enum NextAlarm {
         }.min()
     }
 
+    /// The most recent time this alarm was due to ring, at or before `now`.
+    static func previousDate(for alarm: AlarmSnapshot, before now: Date) -> Date? {
+        let calendar = Calendar.current
+        for daysBack in 0...7 {
+            guard let day = calendar.date(byAdding: .day, value: -daysBack, to: now),
+                  let date = calendar.date(bySettingHour: alarm.hour, minute: alarm.minute, second: 0, of: day),
+                  date <= now else { continue }
+            if alarm.weekdays.isEmpty || alarm.weekdays.contains(calendar.component(.weekday, from: date)) {
+                return date
+            }
+        }
+        return nil
+    }
+
     static func summary(for alarms: [AlarmSnapshot], now: Date) -> String {
         let next = alarms.filter(\.isEnabled).compactMap { date(for: $0, after: now) }.min()
         guard let next else { return alarms.isEmpty ? "Add an alarm to get started" : "No alarms on" }

@@ -63,7 +63,7 @@ Radii: cards 28, sheet 38, grouped sections 24, buttons are capsules.
 | 600–900 ms | Morph | checkmark replaces the wave; sunrise fades, calm sky fades in | .contentTransition(.symbolEffect(.replace)) |
 | 1200 ms | Settled | calm sky, white check, "Alarm off / You're up" | glassEffectID("disc", in: ns) → 06 |
 
-**06 Dismissed (dawn by day, night after 7 PM).** Glass disc (140 pt) with check, "You're up", "Alarm off at 6:34 AM", glass pill "Wake Up Check in 5 minutes", accent "Done" button.
+**06 Dismissed (dawn by day, night after 7 PM).** Glass disc (140 pt) with check, "You're up", "Alarm off at 6:34 AM", glass pill "Wake Up Check in 5 minutes" (only when the alarm has Wake Up Check on), accent "Done" button.
 
 **07 Wake Up Check (dawn by day, night after 7 PM).** "Wake Up Check / Still up?", glass disc (240 pt) with a countdown ring (accent, 8 pt) and "0:48", the line "Tap before the timer ends, or the alarm rings again.", accent "I'm up" (76 pt). No answer → re-ring with the same stop method.
 

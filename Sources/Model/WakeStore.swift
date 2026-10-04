@@ -1,9 +1,13 @@
 import Foundation
 
-/// Ring-session bookkeeping shared by the intents and the app (they run in the same process).
+/// Ring bookkeeping shared by the intents and the app. Everything is persisted, so it survives the
+/// app being launched in the background for an intent and then terminated.
 ///
-/// Every AlarmKit alarm that rings has a ring ID. A scheduled alarm's ring ID is its own ID; each
-/// re-ring gets a fresh one that is linked back to its parent alarm.
+/// Every AlarmKit alarm that rings has a ring ID linked back to its parent alarm (the saved AlarmItem):
+/// the scheduled alarm gets a fresh ID each time it's saved, and each re-ring gets its own.
+///
+/// An alarm's *cycle* opens the first time we learn it rang and closes only when the user proves
+/// they're up. While it's open, the app always asks for proof.
 @MainActor
 enum WakeStore {
     private static let defaults = UserDefaults.standard
@@ -11,9 +15,12 @@ enum WakeStore {
     private static let pendingKey = "wake.pending"
     private static let satisfiedKey = "wake.satisfied"
     private static let wakeChecksKey = "wake.checks"
+    private static let scheduledKey = "wake.scheduled"
+    private static let fireDatesKey = "wake.fireDates"
+    private static let cyclesKey = "wake.openCycles"
 
-    /// How long a verified scan keeps the system Stop button from re-ringing.
-    static let satisfiedWindow: TimeInterval = 30 * 60
+    /// An open cycle older than this is treated as stale (it can't still be ringing).
+    static let cycleLifetime: TimeInterval = 12 * 60 * 60
 
     // MARK: Ring IDs
 
@@ -31,6 +38,59 @@ enum WakeStore {
         strings(parentsKey).compactMap { key, value in
             value == parent.uuidString ? UUID(uuidString: key) : nil
         }
+    }
+
+    // MARK: Scheduled alarm (current AlarmKit ID of each saved alarm)
+
+    static func scheduledID(for parent: UUID) -> UUID? {
+        strings(scheduledKey)[parent.uuidString].flatMap { UUID(uuidString: $0) }
+    }
+
+    static func setScheduledID(_ ringID: UUID?, for parent: UUID) {
+        var map = strings(scheduledKey)
+        map[parent.uuidString] = ringID?.uuidString
+        defaults.set(map, forKey: scheduledKey)
+    }
+
+    static func isScheduledID(_ ringID: UUID) -> Bool {
+        strings(scheduledKey).values.contains(ringID.uuidString)
+    }
+
+    // MARK: One-off ring times
+
+    static func fireDate(of ringID: UUID) -> Date? {
+        numbers(fireDatesKey)[ringID.uuidString].map { Date(timeIntervalSince1970: $0) }
+    }
+
+    static func setFireDate(_ date: Date, for ringID: UUID) {
+        let now = Date().timeIntervalSince1970
+        var map = numbers(fireDatesKey).filter { now - $0.value < 86_400 }
+        map[ringID.uuidString] = date.timeIntervalSince1970
+        defaults.set(map, forKey: fireDatesKey)
+    }
+
+    // MARK: Open cycles (rang, not yet proven)
+
+    static func openCycles() -> [UUID: Date] {
+        var result: [UUID: Date] = [:]
+        let now = Date()
+        for (key, value) in numbers(cyclesKey) {
+            let opened = Date(timeIntervalSince1970: value)
+            if let id = UUID(uuidString: key), now.timeIntervalSince(opened) < cycleLifetime { result[id] = opened }
+        }
+        return result
+    }
+
+    static func openCycle(for parent: UUID) {
+        var map = numbers(cyclesKey)
+        if map[parent.uuidString] == nil { map[parent.uuidString] = Date().timeIntervalSince1970 }
+        defaults.set(map, forKey: cyclesKey)
+    }
+
+    static func closeCycle(for parent: UUID) {
+        var map = numbers(cyclesKey)
+        map[parent.uuidString] = nil
+        defaults.set(map, forKey: cyclesKey)
     }
 
     // MARK: Pending re-ring
@@ -66,9 +126,10 @@ enum WakeStore {
         defaults.set(map, forKey: satisfiedKey)
     }
 
-    static func isSatisfied(_ ringID: UUID) -> Bool {
-        guard let stamp = numbers(satisfiedKey)[ringID.uuidString] else { return false }
-        return Date().timeIntervalSince1970 - stamp < satisfiedWindow
+    /// When this ring was last proven, if ever. Whether that proof covers a given ring is decided by
+    /// `RingEngine.isProven`, which compares it with when the ring started.
+    static func provenAt(_ ringID: UUID) -> Date? {
+        numbers(satisfiedKey)[ringID.uuidString].map { Date(timeIntervalSince1970: $0) }
     }
 
     // MARK: Wake Up Check

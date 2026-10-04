@@ -8,7 +8,7 @@ struct WakeMetadata: AlarmMetadata {
 }
 
 /// Thin wrapper over AlarmKit. Every ring (scheduled alarm or re-ring) gets the same presentation:
-/// a "Silence 1 min" stop button and a "Prove you're awake" button that opens the app.
+/// a "Silence 15 sec" stop button and a "Prove you're awake" button that opens the app.
 @MainActor
 final class AlarmService {
     static let shared = AlarmService()
@@ -34,21 +34,35 @@ final class AlarmService {
         }
     }
 
-    /// Schedules (or reschedules) a user alarm under its own ID.
+    /// Schedules (or reschedules) a saved alarm. Each save gets a fresh AlarmKit ID linked back to the
+    /// alarm, so a reschedule never collides with the ring it replaces (or one that's still ringing).
     func sync(_ alarm: AlarmSnapshot) async throws {
-        cancel(alarm.id)
+        cancelScheduled(for: alarm.id)
         guard alarm.isEnabled else { return }
+        let ringID = UUID()
+        let time = RingTime.daily(hour: alarm.hour, minute: alarm.minute, weekdays: alarm.weekdays)
         do {
-            try await Self.schedule(
-                alarm,
-                ringID: alarm.id,
-                time: .daily(hour: alarm.hour, minute: alarm.minute, weekdays: alarm.weekdays),
-                soundFile: soundFile(for: alarm)
-            )
+            try await Self.schedule(alarm, ringID: ringID, time: time, soundFile: soundFile(for: alarm))
         } catch {
-            DiagnosticsLog.add("AlarmKit refused alarm “\(alarm.displayLabel)”: \(error.localizedDescription)")
-            throw error
+            DiagnosticsLog.add("AlarmKit refused alarm “\(alarm.displayLabel)” (\(Self.describe(error))), retrying")
+            try? await Task.sleep(for: .milliseconds(600))
+            do {
+                try await Self.schedule(alarm, ringID: ringID, time: time, soundFile: soundFile(for: alarm))
+            } catch {
+                DiagnosticsLog.add("AlarmKit refused alarm “\(alarm.displayLabel)” again (\(Self.describe(error)))")
+                throw error
+            }
         }
+        WakeStore.link(ringID: ringID, to: alarm.id)
+        WakeStore.setScheduledID(ringID, for: alarm.id)
+    }
+
+    /// Removes a saved alarm's scheduled ring (not its re-rings).
+    func cancelScheduled(for parent: UUID) {
+        if let current = WakeStore.scheduledID(for: parent) { cancel(current) }
+        // Builds before fresh IDs scheduled alarms under the alarm's own ID.
+        cancel(parent)
+        WakeStore.setScheduledID(nil, for: parent)
     }
 
     /// A one-off ring for the re-ring workaround and the Wake Up Check. Returns its ring ID.
@@ -58,7 +72,7 @@ final class AlarmService {
             try await Self.schedule(alarm, ringID: ringID, time: .at(date), soundFile: soundFile(for: alarm))
             return ringID
         } catch {
-            DiagnosticsLog.add("AlarmKit refused a one-off ring: \(error.localizedDescription)")
+            DiagnosticsLog.add("AlarmKit refused a one-off ring (\(Self.describe(error)))")
             return nil
         }
     }
@@ -82,12 +96,13 @@ final class AlarmService {
 
     /// Brings AlarmKit in line with the saved alarms, leaving pending re-rings alone.
     func resync(_ alarms: [AlarmSnapshot], keeping pending: Set<UUID>) async {
-        let scheduled = Set(((try? AlarmManager.shared.alarms) ?? []).map(\.id))
-        let wanted = Set(alarms.filter(\.isEnabled).map(\.id))
-        for id in scheduled where !wanted.contains(id) && !pending.contains(id) {
+        let known = knownIDs()
+        let wanted = Set(alarms.filter(\.isEnabled).compactMap { WakeStore.scheduledID(for: $0.id) })
+        for id in known where !wanted.contains(id) && !pending.contains(id) {
             cancel(id)
         }
-        for alarm in alarms where alarm.isEnabled && !scheduled.contains(alarm.id) {
+        for alarm in alarms where alarm.isEnabled {
+            if let current = WakeStore.scheduledID(for: alarm.id), known.contains(current) { continue }
             try? await sync(alarm)
         }
     }
@@ -101,6 +116,11 @@ final class AlarmService {
     }
 
     // MARK: AlarmKit calls (off the main actor)
+
+    nonisolated static func describe(_ error: Error) -> String {
+        let ns = error as NSError
+        return "\(ns.domain) \(ns.code): \(String(describing: error))"
+    }
 
     /// Streams the IDs of ringing alarms every time AlarmKit's alarm list changes.
     nonisolated static func watchAlerts(_ onChange: @escaping @Sendable ([UUID]) async -> Void) async {

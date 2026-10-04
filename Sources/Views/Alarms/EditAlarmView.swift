@@ -13,6 +13,7 @@ struct AlarmDraft: Identifiable {
     var method: StopMethod
     var codeID: UUID?
     var soundID: String
+    var wakeCheck = false
 
     var time: Date {
         get { Calendar.current.date(bySettingHour: hour, minute: minute, second: 0, of: .now) ?? .now }
@@ -48,6 +49,7 @@ struct AlarmDraft: Identifiable {
         self.init(id: item.id, isNew: false, hour: item.hour, minute: item.minute, label: item.label,
                   weekdays: Set(item.weekdays), gradualVolume: item.gradualVolume, vibration: item.vibration,
                   method: item.method, codeID: item.codeID, soundID: item.soundID)
+        wakeCheck = item.wakeCheck
     }
 }
 
@@ -141,6 +143,25 @@ struct EditAlarmView: View {
                 }
                 .skyRowBackground()
 
+                Section {
+                    Toggle(isOn: $draft.wakeCheck) {
+                        Label {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Wake Up Check")
+                                Text("5 minutes after you turn it off, check you're still up")
+                                    .font(.sora(.footnote))
+                                    .foregroundStyle(Theme.inkSecondary)
+                            }
+                        } icon: {
+                            Image(systemName: "bell.badge")
+                        }
+                        .labelStyle(AccentIconLabelStyle())
+                    }
+                } header: {
+                    SectionHeader("After waking")
+                }
+                .skyRowBackground()
+
                 if !draft.isNew {
                     Section {
                         Button("Delete Alarm", role: .destructive) { confirmDelete = true }
@@ -226,6 +247,7 @@ struct EditAlarmView: View {
         item.method = draft.method
         item.codeID = selectedCode?.id
         item.soundID = draft.soundID
+        item.wakeCheck = draft.wakeCheck
         item.isEnabled = true
         try? context.save()
 
@@ -249,7 +271,7 @@ struct EditAlarmView: View {
             return
         }
         if let item = Library.alarm(draft.id) {
-            AlarmService.shared.cancel(item.id)
+            RingEngine.shared.forget(item.id)
             context.delete(item)
             try? context.save()
         }

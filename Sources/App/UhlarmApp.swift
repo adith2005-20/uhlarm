@@ -67,16 +67,21 @@ struct RootView: View {
             }
         }
         .task {
+            // Safety net under everything else: while the app is in front, an unfinished alarm always
+            // gets the proof screen within a few seconds.
             while !Task.isCancelled {
                 RingEngine.shared.refreshLocks()
-                model.checkPendingWakeChecks()
-                try? await Task.sleep(for: .seconds(5))
+                if UIApplication.shared.applicationState == .active {
+                    RingEngine.shared.resumeUnfinishedAlarm()
+                    model.checkPendingWakeChecks()
+                }
+                try? await Task.sleep(for: .seconds(3))
             }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
-                model.checkPendingWakeChecks()
                 RingEngine.shared.resumeUnfinishedAlarm()
+                model.checkPendingWakeChecks()
             }
         }
         .onOpenURL { url in

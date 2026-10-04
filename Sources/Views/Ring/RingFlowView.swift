@@ -27,9 +27,22 @@ struct RingFlowView: View {
                     .transition(.opacity)
             }
         }
+        .overlay(alignment: .topTrailing) {
+            if session.parentID == AlarmSnapshot.testAlarmID && session.completedAt == nil {
+                Button("End test") { RingEngine.shared.stopTestAlarms() }
+                    .font(.sora(.subheadline, .semibold))
+                    .buttonStyle(.glass)
+                    .padding(.trailing, 16)
+                    .padding(.top, 8)
+            }
+        }
         .animation(.smooth(duration: 0.5), value: session.phase)
         .font(.sora(.body))
         .environment(\.colorScheme, session.colorScheme)
+        // Keep the screen on while an alarm is open: iPhone only reads NFC tags with the screen on, and a
+        // locked phone would hide the proof screen.
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .statusBarHidden(session.phase == .verify && session.alarm.method != .nfc)
         // While the flow is open and unverified, keep a re-ring booked a little ahead, so leaving
         // the app (or the phone dying in a drawer) still ends in another alarm.
@@ -159,12 +172,14 @@ struct SuccessView: View {
                     .foregroundStyle(Theme.inkSecondary)
                     .padding(.top, 8)
 
-                Label("Wake Up Check in 5 minutes", systemImage: "bell")
-                    .font(.sora(.subheadline, .medium))
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
-                    .glassEffect(.regular, in: .capsule)
-                    .padding(.top, 32)
+                if session.alarm.wakeCheck {
+                    Label("Wake Up Check in 5 minutes", systemImage: "bell")
+                        .font(.sora(.subheadline, .medium))
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 12)
+                        .glassEffect(.regular, in: .capsule)
+                        .padding(.top, 32)
+                }
 
                 Spacer()
 

@@ -24,14 +24,14 @@ struct OnboardingView: View {
             body: "When it rings, tap Prove you're awake, then scan or tap your code. Silencing only buys 15 seconds. Then it rings again."
         ),
         OnboardingPage(
-            symbols: ["bell.badge.fill"],
-            title: "Still up?",
-            body: "Five minutes later, a Wake Up Check makes sure you didn't crawl back into bed. Lost your code? An emergency unlock always gets you out."
+            symbols: ["lifepreserver.fill"],
+            title: "Never locked out",
+            body: "Lost your code? The emergency unlock always gets you out: wait 90 seconds, type a sentence, hold to finish."
         ),
         OnboardingPage(
             symbols: ["alarm.fill"],
             title: "Ring through Silent",
-            body: "Allow alarms so they ring even in Silent mode and Focus, and notifications for the Wake Up Check. The camera is only used to scan."
+            body: "Allow alarms so they ring even in Silent mode and Focus, and notifications for the optional Wake Up Check. The camera is only used to scan."
         ),
     ]
 

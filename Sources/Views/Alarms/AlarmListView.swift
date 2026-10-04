@@ -9,6 +9,7 @@ struct AlarmListView: View {
 
     @State private var editing: AlarmDraft?
     @State private var lockedNotice: String?
+    @State private var showDiagnostics = false
     @State private var isEditing = false
 
     var body: some View {
@@ -22,6 +23,9 @@ struct AlarmListView: View {
                             .contentTransition(.numericText())
                     }
                     .padding(.horizontal, 4)
+                    // Diagnostics stays out of the way: hold the "Next alarm" line for a second.
+                    .onLongPressGesture(minimumDuration: 1) { showDiagnostics = true }
+                    .accessibilityAction(named: "Diagnostics") { showDiagnostics = true }
 
                     if alarms.isEmpty {
                         EmptyAlarms { editing = newDraft() }
@@ -43,16 +47,6 @@ struct AlarmListView: View {
                             }
                         }
                     }
-
-                    NavigationLink {
-                        DiagnosticsView()
-                    } label: {
-                        Label("Diagnostics", systemImage: "stethoscope")
-                            .font(.sora(.footnote, .medium))
-                            .foregroundStyle(Theme.inkTertiary)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .padding(.top, 12)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
@@ -74,7 +68,11 @@ struct AlarmListView: View {
             .sheet(item: $editing) { draft in
                 EditAlarmView(draft: draft)
             }
-            .dismissOnRing { editing = nil }
+            .navigationDestination(isPresented: $showDiagnostics) { DiagnosticsView() }
+            .dismissOnRing {
+                editing = nil
+                showDiagnostics = false
+            }
             .alert("Alarm locked", isPresented: .constant(lockedNotice != nil)) {
                 Button("OK") { lockedNotice = nil }
             } message: {
@@ -109,7 +107,7 @@ struct AlarmListView: View {
 
     private func delete(_ alarm: AlarmItem) {
         guard !RingEngine.shared.isLocked(alarm.id) else { return }
-        AlarmService.shared.cancel(alarm.id)
+        RingEngine.shared.forget(alarm.id)
         context.delete(alarm)
         try? context.save()
         if alarms.count <= 1 { isEditing = false }

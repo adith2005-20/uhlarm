@@ -23,6 +23,7 @@ struct NFCView: View {
     @State private var settled = false
     @State private var successTick = 0
     @State private var failTick = 0
+    @State private var showHelp = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -75,6 +76,11 @@ struct NFCView: View {
         .environment(\.colorScheme, .dark)
         .sensoryFeedback(.success, trigger: successTick)
         .sensoryFeedback(.error, trigger: failTick)
+        .task(id: mode == .waiting) {
+            guard mode == .waiting else { return }
+            try? await Task.sleep(for: .seconds(20))
+            if !Task.isCancelled, mode == .waiting { withAnimation(.smooth) { showHelp = true } }
+        }
         .onChange(of: event) { _, newEvent in
             guard let newEvent, mode != .success else { return }
             if newEvent.matched {
@@ -153,11 +159,22 @@ struct NFCView: View {
         VStack(spacing: 8) {
             switch mode {
             case .waiting:
-                Text("Hold your phone to the tag")
+                Text("Tap the top of your iPhone on the tag")
                     .font(.sora(.title2, .semibold))
                 Text(tagName)
-                    .font(.sora(.body))
-                    .foregroundStyle(Theme.ink.opacity(0.75))
+                    .font(.sora(.body, .medium))
+                    .foregroundStyle(Theme.ink.opacity(0.85))
+                Text("Keep the screen on and hold still for a second. iPhone reads the tag and turns the alarm off.")
+                    .font(.sora(.subheadline))
+                    .foregroundStyle(Theme.ink.opacity(0.7))
+                    .padding(.top, 6)
+                if showHelp {
+                    Text("Nothing happening? In Shortcuts, check the tag's automation is set to Run Immediately and runs Verify Wake Tag with “\(tagName)”.")
+                        .font(.sora(.footnote))
+                        .foregroundStyle(Theme.accent)
+                        .padding(.top, 6)
+                        .transition(.opacity)
+                }
             case .success:
                 Text(successTitle)
                     .font(.sora(.title2, .semibold))

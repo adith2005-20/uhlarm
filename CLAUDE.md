@@ -25,9 +25,17 @@ AlarmKit alert (system UI)
 - Build with `AlarmManager.AlarmConfiguration.alarm(schedule:attributes:stopIntent:secondaryIntent:sound:)`.
 - `stopIntent`: a `LiveActivityIntent`. It checks `WakeStore.isVerified(alarmID)`. If not verified, it schedules a one-shot alarm 15 s out (`RingEngine.silenceDuration`), with the same attributes, label and stop method.
 - `secondaryIntent`: opens the app (`openAppWhenRun` / an `OpenIntent`) and routes to `RingingView` for that alarm.
-- Verifying (QR match or NFC intent) marks the alarm verified, cancels any pending re-ring, shows the success screen and schedules the Wake Up Check (+5 min).
+- Verifying (QR match or NFC intent) marks the alarm verified, cancels any pending re-ring, shows the success screen and, if the alarm has Wake Up Check on (per-alarm setting, off by default), schedules it (+5 min).
 - If the alert's Stop button label can be customised, call it something honest: it reads "Silence 15 sec".
 - **Spike 0 is to prove this works on device:** tap Stop, wait 15 s, confirm it rings again (Alarms → Diagnostics has a test alarm and a log). If intents can't schedule from the stop action, report back before building further.
+
+### Ring state rules (don't break these)
+
+- An alarm's **cycle** opens the first time the app learns it rang (Stop or Prove tapped, AlarmKit reports it alerting, a tag scanned) and closes only when the user proves they're up. Cycles are persisted (`WakeStore`), so they survive the app being launched in the background for an intent and terminated.
+- **A ringing alarm always needs proof.** A proof only covers rings that started before it (`RingEngine.isProven` compares with the ring's start). Never decide "already verified" from an alarm ID and a time window: scheduled alarms reuse their ID every time they ring.
+- Every path asks the same function, `RingEngine.unfinishedRings()`: the alert's Stop and Prove intents, the AlarmKit `alarmUpdates` watcher, app launch / foreground, the NFC intent and a 3 s check while the app is open. If anything is unfinished and nothing is on screen, `resumeUnfinishedAlarm()` shows the proof screen.
+- Each save of an alarm schedules it under a fresh AlarmKit ID, linked back to the alarm (`WakeStore.scheduledID`).
+- Alarms are locked (no toggle, edit or delete) while unfinished and from 5 minutes before they ring.
 
 ## Stop methods
 

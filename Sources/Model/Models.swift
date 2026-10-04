@@ -73,6 +73,8 @@ final class AlarmItem {
     var methodRaw: String = StopMethod.qr.rawValue
     var codeID: UUID?
     var soundID: String = "sunrise"
+    /// Ask "Still up?" five minutes after the alarm is turned off. Off unless chosen.
+    var wakeCheck: Bool = false
     var createdAt: Date = Date()
 
     init(id: UUID = UUID(), hour: Int, minute: Int) {
@@ -90,7 +92,7 @@ final class AlarmItem {
         AlarmSnapshot(
             id: id, hour: hour, minute: minute, label: label, weekdays: weekdays,
             isEnabled: isEnabled, gradualVolume: gradualVolume, vibration: vibration,
-            method: method, soundID: soundID,
+            method: method, soundID: soundID, wakeCheck: wakeCheck,
             codeName: code?.kind == method ? code?.name : nil,
             codeHash: code?.kind == method ? code?.payloadHash : nil
         )
@@ -136,6 +138,7 @@ struct AlarmSnapshot: Sendable, Equatable {
     var vibration: Bool
     var method: StopMethod
     var soundID: String
+    var wakeCheck: Bool
     var codeName: String?
     var codeHash: String?
 
@@ -162,7 +165,7 @@ struct AlarmSnapshot: Sendable, Equatable {
     static func placeholder(id: UUID) -> AlarmSnapshot {
         AlarmSnapshot(id: id, hour: 7, minute: 0, label: id == testAlarmID ? "Test alarm" : "", weekdays: [], isEnabled: false,
                       gradualVolume: false, vibration: true, method: .qr,
-                      soundID: SoundLibrary.defaultSoundID, codeName: nil, codeHash: nil)
+                      soundID: SoundLibrary.defaultSoundID, wakeCheck: false, codeName: nil, codeHash: nil)
     }
 }
 

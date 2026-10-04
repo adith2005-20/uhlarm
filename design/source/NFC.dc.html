@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NFC tap</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#FFC46B}a:hover{color:#FFD796}
+button{font:inherit;color:inherit;cursor:pointer;margin:0}
+.cloud{position:absolute;filter:blur(9px);background:radial-gradient(30% 42% at 26% 62%,currentColor 95%,transparent 100%),radial-gradient(26% 50% at 50% 44%,currentColor 95%,transparent 100%),radial-gradient(26% 38% at 74% 60%,currentColor 95%,transparent 100%),radial-gradient(46% 24% at 50% 76%,currentColor 95%,transparent 100%);animation:drift 70s ease-in-out infinite alternate}
+.stars{position:absolute;left:0;right:0;top:0;height:460px;background-image:radial-gradient(1.6px 1.6px at 42px 88px,#fff 50%,transparent),radial-gradient(1.2px 1.2px at 120px 40px,#fff 50%,transparent),radial-gradient(1.4px 1.4px at 178px 132px,#fff 50%,transparent),radial-gradient(1px 1px at 250px 64px,#fff 50%,transparent),radial-gradient(1.6px 1.6px at 334px 112px,#fff 50%,transparent),radial-gradient(1.2px 1.2px at 366px 30px,#fff 50%,transparent),radial-gradient(1px 1px at 82px 196px,#fff 50%,transparent),radial-gradient(1.4px 1.4px at 300px 214px,#fff 50%,transparent),radial-gradient(1.2px 1.2px at 24px 300px,#fff 50%,transparent);animation:twinkle 5s ease-in-out infinite alternate}
+.ring{position:absolute;left:111px;top:236px;width:168px;height:168px;box-sizing:border-box;border-radius:50%;border:1.5px solid rgba(255,196,107,0.55);animation:ripple 6s linear infinite}
+.snap{position:absolute;left:95px;top:-100px;width:200px;height:200px;box-sizing:border-box;border-radius:50%;border:2px solid rgba(255,255,255,0.8);animation:snap 0.9s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
+@keyframes twinkle{from{opacity:0.3}to{opacity:0.8}}
+@keyframes breathe{0%,100%{transform:scale(0.95);opacity:0.75}50%{transform:scale(1.03);opacity:1}}
+@keyframes discGlow{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 0 22px rgba(255,196,107,0.22)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 0 56px rgba(255,196,107,0.5)}}
+@keyframes ripple{from{transform:scale(1);opacity:0.6}to{transform:scale(2.4);opacity:0}}
+@keyframes snap{from{transform:scale(0.1);opacity:1}to{transform:scale(7);opacity:0}}
+@keyframes antenna{0%{opacity:0.5;transform:scaleX(1)}25%{opacity:1;transform:scaleX(1.6)}100%{opacity:0;transform:scaleX(1)}}
+@keyframes pulse{0%{transform:scale(1)}18%{transform:scale(0.92)}55%{transform:scale(1.06);border-radius:47% 53% 52% 48%}100%{transform:scale(1);border-radius:50%}}
+@keyframes checkIn{from{transform:scale(0.4) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; color: #F5F8FF; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; background: #081326">
+
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, #081326 0%, #14294F 46%, #34507E 100%)">
+    <div class="stars"></div>
+  </div>
+
+  <sc-if value="{{isWaiting}}" hint-placeholder-val="{{ true }}">
+    <div aria-hidden="true" style="position: absolute; left: -230px; right: -230px; bottom: -460px; height: 900px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,210,122,0.9) 0%, rgba(255,159,90,0.6) 26%, rgba(255,159,90,0.22) 55%, rgba(255,159,90,0) 100%); animation: breathe 4.5s ease-in-out infinite"></div>
+  </sc-if>
+  <sc-if value="{{isSuccess}}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position: absolute; left: -230px; right: -230px; bottom: -460px; height: 900px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,210,122,0.9) 0%, rgba(255,159,90,0.6) 26%, rgba(255,159,90,0.22) 55%, rgba(255,159,90,0) 100%); animation: fadeOut 0.8s ease-out 0.35s both"></div>
+    <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, #24497A 0%, #4F7FB6 55%, #8DB5DF 100%); animation: fadeIn 0.85s ease-out 0.35s both"></div>
+  </sc-if>
+
+  <div aria-hidden="true" style="position: absolute; inset: 0">
+    <div class="cloud" style="color: #9DB3D6; opacity: 0.22; top: 150px; left: -80px; width: 300px; height: 96px; animation-duration: 78s"></div>
+    <div class="cloud" style="color: #C7B7C4; opacity: 0.3; top: 520px; left: 160px; width: 320px; height: 100px; animation-duration: 64s; animation-direction: alternate-reverse"></div>
+    <div class="cloud" style="color: #FFC9A0; opacity: 0.4; top: 690px; left: -40px; width: 320px; height: 96px; animation-duration: 58s"></div>
+  </div>
+
+  <sc-if value="{{isWaiting}}" hint-placeholder-val="{{ true }}">
+    <div aria-hidden="true" style="position: absolute; top: 10px; left: 175px; width: 40px; height: 4px; border-radius: 2px; background: rgba(255,196,107,0.6); box-shadow: 0 0 12px rgba(255,196,107,0.7)"></div>
+    <div class="ring" aria-hidden="true"></div>
+    <div class="ring" aria-hidden="true" style="animation-delay: -2s"></div>
+    <div class="ring" aria-hidden="true" style="animation-delay: -4s"></div>
+    <button onClick="{{tap}}" aria-label="Waiting for tag. Tap to preview a successful read." style="position: absolute; left: 111px; top: 236px; width: 168px; height: 168px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; color: #FFC46B; background: linear-gradient(180deg, rgba(255,214,150,0.22), rgba(255,196,107,0.08)); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%); animation: discGlow 3.5s ease-in-out infinite">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg>
+    </button>
+    <div style="position: absolute; top: 452px; left: 24px; right: 24px; text-align: center">
+      <div style="font-size: 26px; font-weight: 600">Hold your phone to the tag</div>
+      <div style="font-size: 17px; color: rgba(245,248,255,0.75); margin-top: 8px">Bathroom mirror</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isSuccess}}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position: absolute; top: 10px; left: 175px; width: 40px; height: 4px; border-radius: 2px; background: #FFFFFF; box-shadow: 0 0 16px #FFFFFF; animation: antenna 0.5s ease-out both"></div>
+    <div class="snap" aria-hidden="true"></div>
+    <div class="snap" aria-hidden="true" style="animation-delay: 0.08s; border-color: rgba(255,255,255,0.55)"></div>
+    <div class="snap" aria-hidden="true" style="animation-delay: 0.16s; border-color: rgba(255,255,255,0.35)"></div>
+    <button onClick="{{tap}}" aria-label="Alarm off. Tap to replay." style="position: absolute; left: 111px; top: 236px; width: 168px; height: 168px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; color: #FFFFFF; background: linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.4); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 0 40px rgba(200,225,255,0.3); backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%); animation: pulse 0.6s cubic-bezier(0.34,1.3,0.64,1) both">
+      <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="animation: checkIn 0.45s cubic-bezier(0.34,1.4,0.64,1) 0.3s both"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+    </button>
+    <div style="position: absolute; top: 452px; left: 24px; right: 24px; text-align: center; animation: rise 0.5s ease-out 0.6s both">
+      <div style="font-size: 26px; font-weight: 600">Alarm off</div>
+      <div style="font-size: 17px; color: rgba(245,248,255,0.85); margin-top: 8px">Good morning</div>
+    </div>
+  </sc-if>
+
+  <a href="Ringing.dc.html" aria-label="Back to alarm" style="position: absolute; top: 58px; left: 16px; width: 52px; height: 52px; border-radius: 26px; display: flex; align-items: center; justify-content: center; color: #F5F8FF; box-sizing: border-box; background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.24); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32); backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+  </a>
+
+  <div style="position: absolute; bottom: 40px; left: 0; right: 0; text-align: center">
+    <a href="Fallback.dc.html" style="display: inline-block; padding: 12px 16px; font-size: 15px; color: rgba(245,248,255,0.8); text-decoration: none">Tag missing or damaged?</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"phase":{"editor":"enum","options":["waiting","success"],"default":"waiting","section":"Prototype"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const phase = (this.state && this.state.phase) || this.props.phase || 'waiting';
+    return {
+      isWaiting: phase === 'waiting',
+      isSuccess: phase === 'success',
+      tap: () => this.setState({ phase: phase === 'success' ? 'waiting' : 'success' })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glass legibility states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#FFC46B}a:hover{color:#FFD796}
+button{font:inherit;cursor:pointer;margin:0}
+.cloud{position:absolute;filter:blur(7px);background:radial-gradient(30% 42% at 26% 62%,currentColor 95%,transparent 100%),radial-gradient(26% 50% at 50% 44%,currentColor 95%,transparent 100%),radial-gradient(26% 38% at 74% 60%,currentColor 95%,transparent 100%),radial-gradient(46% 24% at 50% 76%,currentColor 95%,transparent 100%);animation:drift 50s ease-in-out infinite alternate}
+.night{position:relative;height:312px;border-radius:28px;overflow:hidden;color:#F5F8FF;background:linear-gradient(180deg,#081326 0%,#14294F 50%,#34507E 100%)}
+.dawn{position:relative;height:312px;border-radius:28px;overflow:hidden;color:#10233A;background:linear-gradient(180deg,#7FB2EA 0%,#B5D3F1 44%,#F1DCCB 76%,#FFD1A6 100%)}
+.sunN{position:absolute;left:-120px;right:-120px;bottom:-210px;height:440px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,122,0.98),rgba(255,159,90,0.7) 28%,rgba(255,159,90,0.25) 58%,rgba(255,159,90,0) 100%)}
+.sunD{position:absolute;left:-120px;right:-120px;bottom:-220px;height:440px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,190,1),rgba(255,194,122,0.8) 24%,rgba(255,181,71,0.3) 54%,rgba(255,181,71,0) 100%)}
+.t{position:absolute;top:48px;left:0;right:0;text-align:center;font-family:ui-rounded,'SF Pro Rounded',-apple-system,system-ui,sans-serif;font-size:64px;font-weight:300;letter-spacing:-2px}
+@keyframes drift{from{transform:translateX(-24px)}to{transform:translateX(24px)}}
+</style>
+</helmet>
+<div style="width: 880px; height: 844px; box-sizing: border-box; padding: 36px; background: #0B1426; color: #F5F8FF; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div>
+    <h1 style="margin: 0; font-size: 26px; font-weight: 700">The Stop button at every glass setting</h1>
+    <p style="margin: 6px 0 0; font-size: 15px; color: rgba(245,248,255,0.7)">Night sky on top, dawn sky below. The label always sits on a tint we choose, so it stays readable even at the clearest setting.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; font-size: 13px; font-weight: 600; color: rgba(245,248,255,0.75)">
+    <div>Clear (slider min)</div>
+    <div>Tinted (slider max)</div>
+    <div>Reduce Transparency</div>
+    <div>Increase Contrast</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+    <div class="night">
+      <div class="sunN" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFB988; opacity: 0.55; top: 200px; left: -40px; width: 200px; height: 66px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #F5F8FF; background: rgba(20,34,62,0.34); border: 1px solid rgba(255,255,255,0.32); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); backdrop-filter: blur(6px)">Stop</button>
+    </div>
+    <div class="night">
+      <div class="sunN" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFB988; opacity: 0.55; top: 200px; left: -40px; width: 200px; height: 66px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #F5F8FF; background: rgba(22,36,64,0.9); border: 1px solid rgba(255,255,255,0.14); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16); backdrop-filter: blur(30px)">Stop</button>
+    </div>
+    <div class="night">
+      <div class="sunN" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFB988; opacity: 0.55; top: 200px; left: -40px; width: 200px; height: 66px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #F5F8FF; background: #23324F; border: none">Stop</button>
+    </div>
+    <div class="night">
+      <div class="sunN" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFB988; opacity: 0.55; top: 200px; left: -40px; width: 200px; height: 66px"></div>
+      <div class="t" style="font-weight: 400; color: #FFFFFF">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 700; color: #FFFFFF; background: #0E1A30; border: 2px solid #F5F8FF">Stop</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+    <div class="dawn">
+      <div class="sunD" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFFFFF; opacity: 0.8; top: 186px; left: -30px; width: 210px; height: 70px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #10233A; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.9); box-shadow: inset 0 1px 0 #FFFFFF; backdrop-filter: blur(6px)">Stop</button>
+    </div>
+    <div class="dawn">
+      <div class="sunD" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFFFFF; opacity: 0.8; top: 186px; left: -30px; width: 210px; height: 70px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #10233A; background: rgba(250,251,255,0.94); border: 1px solid rgba(16,35,58,0.08); box-shadow: inset 0 1px 0 #FFFFFF; backdrop-filter: blur(30px)">Stop</button>
+    </div>
+    <div class="dawn">
+      <div class="sunD" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFFFFF; opacity: 0.8; top: 186px; left: -30px; width: 210px; height: 70px"></div>
+      <div class="t">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 600; color: #10233A; background: #FFFFFF; border: none">Stop</button>
+    </div>
+    <div class="dawn" style="color: #000000">
+      <div class="sunD" aria-hidden="true"></div>
+      <div class="cloud" aria-hidden="true" style="color: #FFFFFF; opacity: 0.8; top: 186px; left: -30px; width: 210px; height: 70px"></div>
+      <div class="t" style="font-weight: 400">6:30</div>
+      <button style="position: absolute; left: 16px; right: 16px; bottom: 22px; height: 56px; border-radius: 28px; font-size: 20px; font-weight: 700; color: #000000; background: #FFFFFF; border: 2px solid #10233A">Stop</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":880,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

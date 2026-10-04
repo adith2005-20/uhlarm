@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NFC success frame by frame</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#FFC46B}a:hover{color:#FFD796}
+.mf{position:relative;width:180px;height:390px;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,#081326 0%,#14294F 46%,#34507E 100%);color:#F5F8FF}
+.hz{position:absolute;left:-110px;right:-110px;bottom:-230px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,122,0.9),rgba(255,159,90,0.6) 26%,rgba(255,159,90,0.22) 55%,rgba(255,159,90,0) 100%)}
+.calm{position:absolute;inset:0;background:linear-gradient(180deg,#24497A 0%,#4F7FB6 55%,#8DB5DF 100%)}
+.disc{position:absolute;left:51px;top:113px;width:78px;height:78px;box-sizing:border-box;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.32);box-shadow:inset 0 1px 0 rgba(255,255,255,0.4)}
+.warm{color:#FFC46B;background:linear-gradient(180deg,rgba(255,214,150,0.24),rgba(255,196,107,0.08));box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 0 26px rgba(255,196,107,0.4)}
+.cool{color:#FFFFFF;background:linear-gradient(180deg,rgba(255,255,255,0.28),rgba(255,255,255,0.1));box-shadow:inset 0 1px 0 rgba(255,255,255,0.5),0 0 22px rgba(200,225,255,0.35)}
+.r{position:absolute;box-sizing:border-box;border-radius:50%}
+.ico{position:absolute;left:24px;top:24px}
+.txt{position:absolute;top:212px;left:10px;right:10px;text-align:center;font-size:12px;font-weight:600}
+.time{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;color:#FFC46B}
+.ttl{font-size:17px;font-weight:600;margin-top:4px}
+.dsc{font-size:13px;line-height:1.4;color:rgba(245,248,255,0.75);margin-top:6px}
+.api{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;line-height:1.4;color:#B4C7E4;margin-top:8px}
+</style>
+</helmet>
+<div style="width: 1360px; height: 844px; box-sizing: border-box; padding: 44px 48px; background: #0B1426; color: #F5F8FF; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+  <div>
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">NFC success, frame by frame</h1>
+    <p style="margin: 6px 0 0; font-size: 15px; color: rgba(245,248,255,0.7)">About 1.2 seconds. One phaseAnimator drives every layer; springs with low bounce, no Lottie.</p>
+  </div>
+
+  <div style="display: flex; gap: 36px">
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="hz"></div>
+        <div class="r" style="left: 31px; top: 93px; width: 117px; height: 117px; border: 1px solid rgba(255,196,107,0.45)"></div>
+        <div class="r" style="left: 12px; top: 74px; width: 156px; height: 156px; border: 1px solid rgba(255,196,107,0.2)"></div>
+        <div class="disc warm"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg></div>
+        <div class="txt">Hold your phone to the tag</div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">0 ms</div>
+        <div class="ttl">Waiting</div>
+        <div class="dsc">Disc breathes, rings drift outward on a slow 6 s loop.</div>
+        <div class="api">phaseAnimator · TimelineView(.animation)</div>
+      </div>
+    </div>
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="hz"></div>
+        <div style="position: absolute; top: 5px; left: 72px; width: 36px; height: 3px; border-radius: 2px; background: #FFFFFF; box-shadow: 0 0 12px #FFFFFF, 0 0 24px rgba(255,255,255,0.6)"></div>
+        <div class="disc warm" style="transform: scale(0.93); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 0 34px rgba(255,220,160,0.6)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg></div>
+        <div class="txt">Hold your phone to the tag</div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">0 – 80 ms</div>
+        <div class="ttl">Contact</div>
+        <div class="dsc">Antenna edge flashes, disc presses in to 0.93. Success haptic fires here.</div>
+        <div class="api">.sensoryFeedback(.success, trigger:)</div>
+      </div>
+    </div>
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="hz" style="opacity: 0.9"></div>
+        <div class="r" style="left: 30px; top: -60px; width: 120px; height: 120px; border: 2px solid rgba(255,255,255,0.8)"></div>
+        <div class="r" style="left: -20px; top: -110px; width: 220px; height: 220px; border: 2px solid rgba(255,255,255,0.45)"></div>
+        <div class="disc warm"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="opacity: 0.55"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg></div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">80 – 300 ms</div>
+        <div class="ttl">Snap</div>
+        <div class="dsc">Three rings burst from the top edge, 80 ms apart, scaling 0.1 → 7.</div>
+        <div class="api">Circle().stroke · .scaleEffect(s, anchor: .top)</div>
+      </div>
+    </div>
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="hz" style="opacity: 0.55"></div>
+        <div class="calm" style="opacity: 0.35"></div>
+        <div class="r" style="left: -120px; top: -210px; width: 420px; height: 420px; border: 2px solid rgba(255,255,255,0.3)"></div>
+        <div class="r" style="left: -210px; top: -300px; width: 600px; height: 600px; border: 2px solid rgba(255,255,255,0.14)"></div>
+        <div class="disc warm" style="transform: scale(1.06); border-radius: 46% 54% 52% 48%">
+          <svg class="ico" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFC46B" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="opacity: 0.15"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg>
+          <svg class="ico" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="opacity: 0.5; transform: scale(0.7)"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+        </div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">300 – 600 ms</div>
+        <div class="ttl">Ripple</div>
+        <div class="dsc">Rings sweep past. The glass disc wobbles to 1.06 while the wave dissolves.</div>
+        <div class="api">.spring(duration: 0.35, bounce: 0.15)</div>
+      </div>
+    </div>
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="hz" style="opacity: 0.15"></div>
+        <div class="calm" style="opacity: 0.8"></div>
+        <div class="disc cool" style="transform: scale(1.02)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scale(1.08)"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
+        <div class="txt" style="opacity: 0.6; font-size: 13px">Alarm off</div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">600 – 900 ms</div>
+        <div class="ttl">Morph</div>
+        <div class="dsc">Checkmark replaces the wave. The sunrise glow cools into morning blue.</div>
+        <div class="api">.contentTransition(.symbolEffect(.replace)) · Color.mix(with:by:)</div>
+      </div>
+    </div>
+
+    <div style="width: 180px">
+      <div class="mf">
+        <div class="calm"></div>
+        <div class="disc cool"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
+        <div class="txt" style="font-size: 13px">Alarm off<div style="font-size: 10px; font-weight: 500; opacity: 0.85; margin-top: 3px">Good morning</div></div>
+      </div>
+      <div style="margin-top: 16px">
+        <div class="time">1200 ms</div>
+        <div class="ttl">Settled</div>
+        <div class="dsc">Calm sky, white check, “Alarm off”. The disc carries into screen 06.</div>
+        <div class="api">.glassEffectID("disc", in: ns)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ringing (dawn sky)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#9A5200}a:hover{color:#7A4100}
+.cloud{position:absolute;filter:blur(8px);background:radial-gradient(30% 42% at 26% 62%,currentColor 95%,transparent 100%),radial-gradient(26% 50% at 50% 44%,currentColor 95%,transparent 100%),radial-gradient(26% 38% at 74% 60%,currentColor 95%,transparent 100%),radial-gradient(46% 24% at 50% 76%,currentColor 95%,transparent 100%);animation:drift 70s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
+@keyframes breathe{0%,100%{transform:scale(0.94);opacity:0.8}50%{transform:scale(1.04);opacity:1}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; color: #10233A; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; background: #8DBDF0">
+
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, #7FB2EA 0%, #B5D3F1 44%, #F1DCCB 76%, #FFD1A6 100%)">
+    <div style="position: absolute; inset: 0; opacity: {{bloomOpacity}}">
+      <div style="position: absolute; left: -230px; right: -230px; bottom: -420px; height: 920px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,236,190,1) 0%, rgba(255,194,122,0.85) 22%, rgba(255,181,71,0.35) 52%, rgba(255,181,71,0) 100%); transform-origin: 50% 70%; animation: breathe 4.5s ease-in-out infinite"></div>
+    </div>
+    <div class="cloud" style="color: #FFFFFF; opacity: 0.75; top: 70px; left: -80px; width: 300px; height: 96px; animation-duration: 74s"></div>
+    <div class="cloud" style="color: #FFFFFF; opacity: 0.6; top: 400px; left: 170px; width: 320px; height: 100px; animation-duration: 62s; animation-direction: alternate-reverse"></div>
+    <div class="cloud" style="color: #FFE6D2; opacity: 0.85; top: 610px; left: -50px; width: 330px; height: 104px; animation-duration: 56s"></div>
+    <div class="cloud" style="color: #FFF1E4; opacity: 0.7; top: 700px; left: 190px; width: 280px; height: 90px; animation-duration: 80s; animation-direction: alternate-reverse"></div>
+  </div>
+
+  <div style="position: absolute; top: 120px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center">
+    <div style="font-size: 20px; font-weight: 600; color: rgba(16,35,58,0.74)">Monday, October 5</div>
+    <div style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, system-ui, sans-serif; font-size: 136px; font-weight: 300; letter-spacing: -4px; line-height: 1; margin-top: 6px">6:30</div>
+    <div style="font-size: 24px; font-weight: 500; margin-top: 14px">Wake up</div>
+  </div>
+
+  <a href="NFC.dc.html" style="position: absolute; left: 24px; right: 24px; bottom: 56px; height: 76px; border-radius: 38px; display: flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none; color: #10233A; font-size: 26px; font-weight: 600; background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.4)); border: 1px solid rgba(255,255,255,0.85); box-shadow: inset 0 1px 0 #FFFFFF, 0 14px 36px rgba(120,80,30,0.16); backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%)">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M8 8.5a5 5 0 0 1 0 7M12 5.5a9.5 9.5 0 0 1 0 13M4 11v2"></path></svg>
+    Stop
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"intensity":{"editor":"range","min":0,"max":1,"step":0.05,"default":0.6,"section":"Alarm"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const i = this.props.intensity ?? 0.6;
+    return { bloomOpacity: (0.35 + 0.65 * i).toFixed(2) };
+  }
+}
+</script>
+</body>
+</html>

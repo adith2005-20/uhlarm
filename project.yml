@@ -1,3 +1,5 @@
+# The project and target keep the name AlarmKitTest because .github/workflows/build.yml builds
+# that scheme and packages AlarmKitTest.app. The app itself is "Proof of Wake" (display name, bundle ID).
 name: AlarmKitTest
 options:
   bundleIdPrefix: com.adith

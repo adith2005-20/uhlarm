@@ -114,9 +114,8 @@ private struct EmptyAlarms: View {
                 .controlSize(.large)
         }
         .frame(maxWidth: .infinity)
-        .padding(28)
-        .glassEffect(.regular, in: .rect(cornerRadius: 28))
-        .padding(.top, 24)
+        .padding(.horizontal, 20)
+        .padding(.top, 72)
     }
 }
 

@@ -129,7 +129,7 @@ struct RegisterCodeView: View {
         Section {
             StepRow(number: 1, text: "Open Shortcuts and go to Automation. Tap New Automation, then NFC.")
             StepRow(number: 2, text: "Tap Scan and hold the top of your iPhone to the tag. Name it “\(displayName)”.")
-            StepRow(number: 3, text: "Choose Run Immediately. Add the action Verify Wake Tag from Proof of Wake.")
+            StepRow(number: 3, text: "Choose Run Immediately. Add the action Verify Wake Tag from uhlarm.")
             StepRow(number: 4, text: "Set Tag Name to “\(displayName)” and tap Done.")
             Button {
                 if let url = URL(string: "shortcuts://") { openURL(url) }
@@ -140,7 +140,7 @@ struct RegisterCodeView: View {
         } header: {
             SectionHeader("Set up the automation")
         } footer: {
-            SectionFooter("iPhone reads the tag and tells the alarm, so it works without any special permissions. It can also open proofofwake://verify?tag=\(displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") if you write that to the tag instead.")
+            SectionFooter("iPhone reads the tag and tells the alarm, so it works without any special permissions. It can also open uhlarm://verify?tag=\(displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") if you write that to the tag instead.")
         }
         .skyRowBackground()
 

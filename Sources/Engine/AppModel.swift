@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 
 enum RingPhase: Equatable {
     case ringing
@@ -8,6 +9,13 @@ enum RingPhase: Equatable {
     case fallback
     case success
     case wakeCheck(Date)
+}
+
+enum AlarmLock: Equatable {
+    /// Ringing or silenced, and not yet proven.
+    case ringing
+    /// Rings within the next few minutes.
+    case ringsSoon
 }
 
 struct TagEvent: Equatable {
@@ -48,6 +56,15 @@ final class RingSession: Identifiable {
         return hour < 7 || hour >= 19
     }
 
+    /// Night or dawn for the current screen: proof screens are always night; ringing, success and the
+    /// Wake Up Check follow the real sky.
+    var colorScheme: ColorScheme {
+        switch phase {
+        case .verify, .fallback: .dark
+        case .ringing, .success, .wakeCheck: isNightRing ? .dark : .light
+        }
+    }
+
     /// Where the Stop button leads for this alarm.
     var proofPhase: RingPhase { alarm.hasCode ? .verify : .fallback }
 
@@ -73,6 +90,8 @@ final class AppModel {
     static let shared = AppModel()
 
     var session: RingSession?
+    /// Alarms that can't be switched off, edited or deleted right now, and why.
+    var alarmLocks: [UUID: AlarmLock] = [:]
     /// The latest tag reported by the Shortcuts automation, for the tag tester and registration.
     var lastTag: TagScan?
 

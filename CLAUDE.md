@@ -1,4 +1,4 @@
-# Proof-of-Wake (working name)
+# uhlarm
 
 An iOS 27 alarm app. The alarm only counts as stopped once the user proves they're awake by scanning a registered QR code or barcode, or by tapping an NFC tag (e.g. on the bathroom mirror). Inspired by Alarmy, but calmer: minimal screens, a sky that moves, Liquid Glass throughout.
 
@@ -19,15 +19,15 @@ The full visual spec is in `design/SPEC.md`. Screen images are in `design/screen
 ```
 AlarmKit alert (system UI)
  ├─ secondary button "Prove you're awake" → secondaryIntent (opens the app) → RingingView → Stop → Scanner / NFC
- └─ system Stop button → stopIntent → if no verified scan for this alarm: schedule a re-ring at now + 60 s
+ └─ system Stop button → stopIntent → if no verified scan for this alarm: schedule a re-ring at now + 15 s
 ```
 
 - Build with `AlarmManager.AlarmConfiguration.alarm(schedule:attributes:stopIntent:secondaryIntent:sound:)`.
-- `stopIntent`: a `LiveActivityIntent`. It checks `WakeStore.isVerified(alarmID)`. If not verified, it schedules a one-shot alarm 60 s out, with the same attributes, label and stop method.
+- `stopIntent`: a `LiveActivityIntent`. It checks `WakeStore.isVerified(alarmID)`. If not verified, it schedules a one-shot alarm 15 s out (`RingEngine.silenceDuration`), with the same attributes, label and stop method.
 - `secondaryIntent`: opens the app (`openAppWhenRun` / an `OpenIntent`) and routes to `RingingView` for that alarm.
 - Verifying (QR match or NFC intent) marks the alarm verified, cancels any pending re-ring, shows the success screen and schedules the Wake Up Check (+5 min).
-- If the alert's Stop button label can be customised, call it something honest like "Silence 1 min".
-- **Spike 0 is to prove this works on device:** tap Stop, wait 60 s, confirm it rings again. If intents can't schedule from the stop action, report back before building further.
+- If the alert's Stop button label can be customised, call it something honest: it reads "Silence 15 sec".
+- **Spike 0 is to prove this works on device:** tap Stop, wait 15 s, confirm it rings again (Alarms → Diagnostics has a test alarm and a log). If intents can't schedule from the stop action, report back before building further.
 
 ## Stop methods
 
@@ -36,7 +36,7 @@ AlarmKit alert (system UI)
 | QR code | VisionKit `DataScannerViewController`, `recognizedDataTypes: [.barcode(symbologies: [.qr])]` | Should work on a free account |
 | Any barcode | Same scanner, all symbologies | Should work on a free account |
 | NFC tag | **No Core NFC.** The app exposes an App Intent `VerifyTagIntent(tagName:)` through `AppShortcutsProvider`. The user creates a Shortcuts Personal Automation: *When NFC tag "Bathroom mirror" is scanned → Run VerifyTagIntent*. The intent marks the alarm verified and brings the app forward to play the NFC success animation. | Untested |
-| NFC fallback idea | Write a custom-URL-scheme record (`proofofwake://verify?tag=mirror`) to the tag and handle it with `onOpenURL` | Untested; may not open custom schemes |
+| NFC fallback idea | Write a custom-URL-scheme record (`uhlarm://verify?tag=mirror`) to the tag and handle it with `onOpenURL` | Untested; may not open custom schemes |
 
 Store a SHA-256 of the scanned payload + symbology, never the raw payload.
 

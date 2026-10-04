@@ -11,6 +11,7 @@ struct CodesView: View {
     @State private var testing: WakeCode?
     @State private var deleting: WakeCode?
     @State private var isConfirmingDelete = false
+    @State private var showLocked = false
 
     var body: some View {
         NavigationStack {
@@ -55,6 +56,16 @@ struct CodesView: View {
             }
             .fullScreenCover(item: $testing) { code in
                 CodeTestView(code: code)
+            }
+            .alert("Code in use", isPresented: $showLocked) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("An alarm that's ringing or about to ring needs this code. You can delete it once you've proven you're up.")
+            }
+            .dismissOnRing {
+                registering = nil
+                testing = nil
+                isConfirmingDelete = false
             }
             .confirmationDialog(
                 "Delete \(deleting?.name ?? "")?",
@@ -111,6 +122,11 @@ struct CodesView: View {
     }
 
     private func askDelete(_ code: WakeCode) {
+        // The code an alarm is about to need (or is ringing for) can't be removed.
+        if alarms.contains(where: { $0.codeID == code.id && RingEngine.shared.isLocked($0.id) }) {
+            showLocked = true
+            return
+        }
         deleting = code
         isConfirmingDelete = true
     }
@@ -120,6 +136,7 @@ struct CodesView: View {
     }
 
     private func delete(_ code: WakeCode) {
+        guard !alarms.contains(where: { $0.codeID == code.id && RingEngine.shared.isLocked($0.id) }) else { return }
         let affected = alarms.filter { $0.codeID == code.id }
         for alarm in affected { alarm.codeID = nil }
         context.delete(code)

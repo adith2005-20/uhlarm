@@ -22,6 +22,11 @@ struct StopAlarmIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         if let id = UUID(uuidString: ringID) {
             await RingEngine.shared.systemStopTapped(ringID: id)
+        } else if let ringing = AlarmService.shared.alertingIDs().first {
+            DiagnosticsLog.add("Stop intent arrived without its ring ID; using the ringing alarm")
+            await RingEngine.shared.systemStopTapped(ringID: ringing)
+        } else {
+            DiagnosticsLog.add("Stop intent arrived without a ring ID")
         }
         return .result()
     }
@@ -46,8 +51,14 @@ struct OpenAlarmIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        DiagnosticsLog.add("Open intent received")
         if let id = UUID(uuidString: ringID) {
             await RingEngine.shared.openTapped(ringID: id)
+        } else if let ringing = AlarmService.shared.alertingIDs().first {
+            DiagnosticsLog.add("Open intent arrived without its ring ID; using the ringing alarm")
+            await RingEngine.shared.openTapped(ringID: ringing)
+        } else {
+            RingEngine.shared.resumeUnfinishedAlarm()
         }
         return .result()
     }

@@ -8,6 +8,7 @@ struct AlarmListView: View {
     @Query private var codes: [WakeCode]
 
     @State private var editing: AlarmDraft?
+    @State private var lockedNotice: String?
     @State private var isEditing = false
 
     var body: some View {
@@ -32,7 +33,8 @@ struct AlarmListView: View {
                                         alarm: alarm,
                                         code: code(for: alarm),
                                         isEditing: isEditing,
-                                        onOpen: { editing = AlarmDraft(alarm) },
+                                        lock: AppModel.shared.alarmLocks[alarm.id],
+                                        onOpen: { open(alarm) },
                                         onDelete: { delete(alarm) },
                                         onToggle: { reschedule(alarm) }
                                     )
@@ -41,6 +43,16 @@ struct AlarmListView: View {
                             }
                         }
                     }
+
+                    NavigationLink {
+                        DiagnosticsView()
+                    } label: {
+                        Label("Diagnostics", systemImage: "stethoscope")
+                            .font(.sora(.footnote, .medium))
+                            .foregroundStyle(Theme.inkTertiary)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .padding(.top, 12)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
@@ -62,6 +74,12 @@ struct AlarmListView: View {
             .sheet(item: $editing) { draft in
                 EditAlarmView(draft: draft)
             }
+            .dismissOnRing { editing = nil }
+            .alert("Alarm locked", isPresented: .constant(lockedNotice != nil)) {
+                Button("OK") { lockedNotice = nil }
+            } message: {
+                Text(lockedNotice ?? "")
+            }
         }
     }
 
@@ -77,7 +95,20 @@ struct AlarmListView: View {
         AlarmDraft.new(defaultCode: codes.sorted { $0.createdAt < $1.createdAt }.first)
     }
 
+    /// A ringing or silenced alarm opens the proof screen; one about to ring explains why it's locked.
+    private func open(_ alarm: AlarmItem) {
+        switch RingEngine.shared.lock(for: alarm.id) {
+        case .ringing:
+            RingEngine.shared.resumeUnfinishedAlarm()
+        case .ringsSoon:
+            lockedNotice = "It rings in less than \(Int(RingEngine.preRingLock / 60)) minutes, so it can't be changed or switched off until you've proven you're up."
+        case nil:
+            editing = AlarmDraft(alarm)
+        }
+    }
+
     private func delete(_ alarm: AlarmItem) {
+        guard !RingEngine.shared.isLocked(alarm.id) else { return }
         AlarmService.shared.cancel(alarm.id)
         context.delete(alarm)
         try? context.save()
@@ -85,6 +116,11 @@ struct AlarmListView: View {
     }
 
     private func reschedule(_ alarm: AlarmItem) {
+        if !alarm.isEnabled, RingEngine.shared.isLocked(alarm.id) {
+            // Switching off is not a way to stop a ringing (or about to ring) alarm.
+            alarm.isEnabled = true
+            return
+        }
         try? context.save()
         let snapshot = alarm.snapshot(code: code(for: alarm))
         Task {
@@ -123,14 +159,17 @@ struct AlarmCard: View {
     @Bindable var alarm: AlarmItem
     let code: WakeCode?
     let isEditing: Bool
+    let lock: AlarmLock?
     let onOpen: () -> Void
     let onDelete: () -> Void
     let onToggle: () -> Void
 
+    private var isLocked: Bool { lock != nil }
+
     var body: some View {
         let parts = Clock.parts(hour: alarm.hour, minute: alarm.minute)
         HStack(spacing: 14) {
-            if isEditing {
+            if isEditing && !isLocked {
                 Button(role: .destructive, action: onDelete) {
                     Image(systemName: "minus.circle.fill")
                         .font(.sora(.title2))
@@ -163,6 +202,7 @@ struct AlarmCard: View {
             Toggle("\(parts.time) \(parts.period ?? "") alarm", isOn: $alarm.isEnabled)
                 .labelsHidden()
                 .tint(Theme.accent)
+                .disabled(isLocked)
                 .onChange(of: alarm.isEnabled) { onToggle() }
         }
         .padding(.leading, isEditing ? 12 : 20)
@@ -172,13 +212,33 @@ struct AlarmCard: View {
         .onTapGesture(perform: onOpen)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
         .contextMenu {
-            Button("Edit", systemImage: "pencil", action: onOpen)
-            Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+            if lock == .ringing {
+                Button("Prove You're Up", systemImage: alarm.method.scanSymbol, action: onOpen)
+            } else if lock == nil {
+                Button("Edit", systemImage: "pencil", action: onOpen)
+                Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+            }
         }
-        .accessibilityAction(named: "Edit", onOpen)
+        .accessibilityAction(named: lock == .ringing ? "Prove you're up" : "Edit", onOpen)
     }
 
+    @ViewBuilder
     private var meta: some View {
+        switch lock {
+        case .ringing:
+            Label("Ringing. Tap to prove you're up", systemImage: "lock.fill")
+                .font(.sora(.subheadline, .medium))
+                .foregroundStyle(Theme.accent)
+        case .ringsSoon:
+            Label("Rings soon. Locked until you're up", systemImage: "lock.fill")
+                .font(.sora(.subheadline, .medium))
+                .foregroundStyle(Theme.accent)
+        case nil:
+            details
+        }
+    }
+
+    private var details: some View {
         let label = alarm.label.isEmpty ? nil : alarm.label
         let pieces = [label, Weekdays.summary(alarm.weekdays)].compactMap { $0 }.joined(separator: " · ")
         let matched = code?.kind == alarm.method ? code : nil

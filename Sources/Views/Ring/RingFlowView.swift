@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Full-screen flow for a ringing alarm: Ringing → Scan / NFC (→ Emergency unlock) → Good morning,
+/// Full-screen flow for a ringing alarm: Ringing → Scan / NFC (→ Emergency unlock) → You're up,
 /// plus the Wake Up Check five minutes later.
 struct RingFlowView: View {
     @Bindable var session: RingSession
@@ -29,8 +29,7 @@ struct RingFlowView: View {
         }
         .animation(.smooth(duration: 0.5), value: session.phase)
         .font(.sora(.body))
-        .environment(\.colorScheme, colorScheme)
-        .preferredColorScheme(colorScheme)
+        .environment(\.colorScheme, session.colorScheme)
         .statusBarHidden(session.phase == .verify && session.alarm.method != .nfc)
         // While the flow is open and unverified, keep a re-ring booked a little ahead, so leaving
         // the app (or the phone dying in a drawer) still ends in another alarm.
@@ -38,7 +37,7 @@ struct RingFlowView: View {
             guard session.completedAt == nil else { return }
             while !Task.isCancelled, session.completedAt == nil {
                 await RingEngine.shared.keepAlive(session)
-                try? await Task.sleep(for: .seconds(20))
+                try? await Task.sleep(for: .seconds(RingEngine.keepAliveInterval))
             }
         }
         .task(id: isVibrating) {
@@ -53,14 +52,6 @@ struct RingFlowView: View {
 
     private var isVibrating: Bool {
         session.alarm.vibration && session.completedAt == nil && session.phase == .ringing
-    }
-
-    private var colorScheme: ColorScheme {
-        switch session.phase {
-        case .ringing: session.isNightRing ? .dark : .light
-        case .verify, .fallback: .dark
-        case .success, .wakeCheck: .light
-        }
     }
 
     @ViewBuilder
@@ -139,7 +130,7 @@ struct RingingView: View {
     }
 }
 
-/// 06 Dismissed (dawn).
+/// 06 Dismissed. Dawn sky by day, night sky at night.
 struct SuccessView: View {
     let session: RingSession
 
@@ -160,7 +151,7 @@ struct SuccessView: View {
                     .opacity(appeared ? 1 : 0)
                     .accessibilityLabel("Alarm dismissed")
 
-                Text("Good morning")
+                Text("You're up")
                     .font(.sora(.largeTitle, .bold))
                     .padding(.top, 40)
                 Text("Alarm off at \(Clock.string(session.completedAt ?? .now))")
@@ -192,7 +183,7 @@ struct SuccessView: View {
     }
 }
 
-/// 07 Wake Up Check (dawn).
+/// 07 Wake Up Check. Dawn sky by day, night sky at night.
 struct WakeCheckView: View {
     let session: RingSession
     let deadline: Date

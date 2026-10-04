@@ -156,8 +156,11 @@ struct AlarmSnapshot: Sendable, Equatable {
         return TagName.matches(codeName, name)
     }
 
+    /// Parent ID for the throwaway alarm rung from Diagnostics.
+    static let testAlarmID = UUID(uuidString: "00000000-0000-0000-0000-00000000AA01")!
+
     static func placeholder(id: UUID) -> AlarmSnapshot {
-        AlarmSnapshot(id: id, hour: 7, minute: 0, label: "", weekdays: [], isEnabled: false,
+        AlarmSnapshot(id: id, hour: 7, minute: 0, label: id == testAlarmID ? "Test alarm" : "", weekdays: [], isEnabled: false,
                       gradualVolume: false, vibration: true, method: .qr,
                       soundID: SoundLibrary.defaultSoundID, codeName: nil, codeHash: nil)
     }

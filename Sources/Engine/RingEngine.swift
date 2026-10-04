@@ -14,6 +14,8 @@ final class RingEngine {
     static let wakeCheckWindow: TimeInterval = 60
 
     private let service = AlarmService.shared
+    /// Bumped on every re-ring request per alarm, so a slower, older request can't overwrite a newer one.
+    private var generations: [UUID: Int] = [:]
 
     // MARK: Alert buttons
 
@@ -78,6 +80,7 @@ final class RingEngine {
     // MARK: Wake Up Check
 
     func confirmWakeCheck(parent: UUID) {
+        generations[parent, default: 0] += 1
         cancelPending(for: parent)
         WakeStore.setWakeCheck(nil, for: parent)
         Notifier.cancelWakeCheck(parent: parent)
@@ -85,6 +88,7 @@ final class RingEngine {
 
     /// The timer ran out with the app open: ring again in-app, same stop method.
     func wakeCheckMissed(parent: UUID) {
+        generations[parent, default: 0] += 1
         cancelPending(for: parent)
         WakeStore.setWakeCheck(nil, for: parent)
         let ringID = UUID()
@@ -101,20 +105,26 @@ final class RingEngine {
 
     private func scheduleWakeCheck(parent: UUID) async {
         let deadline = Date.now.addingTimeInterval(Self.wakeCheckDelay + Self.wakeCheckWindow)
-        await scheduleReRing(parent: parent, after: deadline.timeIntervalSinceNow)
+        // AlarmKit's backup rings just after the in-app deadline, so an open app handles it first.
+        await scheduleReRing(parent: parent, after: deadline.timeIntervalSinceNow + 10)
         WakeStore.setWakeCheck(deadline, for: parent)
         await Notifier.scheduleWakeCheck(parent: parent, at: deadline.addingTimeInterval(-Self.wakeCheckWindow))
     }
 
     private func scheduleReRing(parent: UUID, after seconds: TimeInterval) async {
+        let generation = (generations[parent] ?? 0) + 1
+        generations[parent] = generation
         cancelPending(for: parent)
         let alarm = Library.snapshot(for: parent) ?? .placeholder(id: parent)
-        if let ringID = await service.scheduleOneShot(for: alarm, at: .now.addingTimeInterval(seconds)) {
-            // Another call may have raced us while scheduling; keep only the newest.
-            cancelPending(for: parent)
-            WakeStore.link(ringID: ringID, to: parent)
-            WakeStore.setPending(ringID, for: parent)
+        guard let ringID = await service.scheduleOneShot(for: alarm, at: .now.addingTimeInterval(seconds)) else { return }
+        guard generations[parent] == generation else {
+            // A newer request (or a verification) happened while this one was scheduling.
+            service.cancel(ringID)
+            return
         }
+        cancelPending(for: parent)
+        WakeStore.link(ringID: ringID, to: parent)
+        WakeStore.setPending(ringID, for: parent)
     }
 
     private func cancelPending(for parent: UUID) {

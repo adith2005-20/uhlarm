@@ -38,7 +38,7 @@ struct RingFlowView: View {
             guard session.completedAt == nil else { return }
             while !Task.isCancelled, session.completedAt == nil {
                 await RingEngine.shared.keepAlive(session)
-                try? await Task.sleep(for: .seconds(20))
+                try? await Task.sleep(for: .seconds(RingEngine.keepAliveInterval))
             }
         }
         .task(id: isVibrating) {

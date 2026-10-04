@@ -38,12 +38,17 @@ final class AlarmService {
     func sync(_ alarm: AlarmSnapshot) async throws {
         cancel(alarm.id)
         guard alarm.isEnabled else { return }
-        try await Self.schedule(
-            alarm,
-            ringID: alarm.id,
-            time: .daily(hour: alarm.hour, minute: alarm.minute, weekdays: alarm.weekdays),
-            soundFile: soundFile(for: alarm)
-        )
+        do {
+            try await Self.schedule(
+                alarm,
+                ringID: alarm.id,
+                time: .daily(hour: alarm.hour, minute: alarm.minute, weekdays: alarm.weekdays),
+                soundFile: soundFile(for: alarm)
+            )
+        } catch {
+            DiagnosticsLog.add("AlarmKit refused alarm “\(alarm.displayLabel)”: \(error.localizedDescription)")
+            throw error
+        }
     }
 
     /// A one-off ring for the re-ring workaround and the Wake Up Check. Returns its ring ID.
@@ -53,6 +58,7 @@ final class AlarmService {
             try await Self.schedule(alarm, ringID: ringID, time: .at(date), soundFile: soundFile(for: alarm))
             return ringID
         } catch {
+            DiagnosticsLog.add("AlarmKit refused a one-off ring: \(error.localizedDescription)")
             return nil
         }
     }
@@ -112,7 +118,8 @@ final class AlarmService {
             schedule = .fixed(date)
         }
 
-        let silence = AlarmButton(text: "Silence 1 min", textColor: .white, systemImageName: "speaker.slash.fill")
+        let silence = AlarmButton(text: "Silence \(Int(RingEngine.silenceDuration)) sec", textColor: .white,
+                                  systemImageName: "speaker.slash.fill")
         let prove = AlarmButton(text: "Prove you're awake", textColor: .white, systemImageName: alarm.method.scanSymbol)
         let alert = AlarmPresentation.Alert(
             title: LocalizedStringResource(stringLiteral: alarm.displayLabel),

@@ -21,7 +21,7 @@ struct OnboardingView: View {
         OnboardingPage(
             symbols: ["hand.tap.fill"],
             title: "Prove you're awake",
-            body: "When it rings, tap Prove you're awake, then scan or tap your code. Silencing only buys a minute. Then it rings again."
+            body: "When it rings, tap Prove you're awake, then scan or tap your code. Silencing only buys 15 seconds. Then it rings again."
         ),
         OnboardingPage(
             symbols: ["bell.badge.fill"],

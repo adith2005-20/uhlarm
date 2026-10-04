@@ -10,7 +10,7 @@ enum Notifier {
     static func scheduleWakeCheck(parent: UUID, at date: Date) async {
         let content = UNMutableNotificationContent()
         content.title = "Wake Up Check"
-        content.body = "Still up? Open uhlarm within a minute, or the alarm rings again."
+        content.body = "Still up? Tap here and press I'm up within a minute, or the alarm rings again."
         content.sound = .default
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, date.timeIntervalSinceNow), repeats: false)
         let request = UNNotificationRequest(identifier: identifier(parent), content: content, trigger: trigger)

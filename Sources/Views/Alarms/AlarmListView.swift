@@ -41,6 +41,16 @@ struct AlarmListView: View {
                             }
                         }
                     }
+
+                    NavigationLink {
+                        DiagnosticsView()
+                    } label: {
+                        Label("Diagnostics", systemImage: "stethoscope")
+                            .font(.sora(.footnote, .medium))
+                            .foregroundStyle(Theme.inkTertiary)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .padding(.top, 12)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)

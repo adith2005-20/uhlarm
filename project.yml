@@ -1,0 +1,24 @@
+name: AlarmKitTest
+options:
+  bundleIdPrefix: com.adith
+  deploymentTarget:
+    iOS: "26.0"
+targets:
+  AlarmKitTest:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: AlarmKit Test
+        NSAlarmKitUsageDescription: This test app schedules an alarm to check that AlarmKit works.
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adith.alarmkittest
+        SWIFT_VERSION: "6.0"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: NO

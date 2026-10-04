@@ -1,0 +1,40 @@
+name: Build unsigned IPA
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode versions
+        run: |
+          ls /Applications | grep -i xcode
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build
+        run: |
+          xcodebuild -project AlarmKitTest.xcodeproj -scheme AlarmKitTest \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/AlarmKitTest.app Payload/
+          zip -qr AlarmKitTest.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AlarmKitTest-ipa
+          path: AlarmKitTest.ipa

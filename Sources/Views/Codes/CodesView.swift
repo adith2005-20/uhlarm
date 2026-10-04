@@ -56,6 +56,11 @@ struct CodesView: View {
             .fullScreenCover(item: $testing) { code in
                 CodeTestView(code: code)
             }
+            .dismissOnRing {
+                registering = nil
+                testing = nil
+                isConfirmingDelete = false
+            }
             .confirmationDialog(
                 "Delete \(deleting?.name ?? "")?",
                 isPresented: $isConfirmingDelete,

@@ -10,7 +10,6 @@ struct UhlarmApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
-                .preferredColorScheme(.dark)
         }
         .modelContainer(Persistence.container)
     }
@@ -23,35 +22,53 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            if didOnboard {
-                TabView {
-                    Tab("Alarms", systemImage: "alarm") {
-                        AlarmListView()
+            Group {
+                if didOnboard {
+                    TabView {
+                        Tab("Alarms", systemImage: "alarm") {
+                            AlarmListView()
+                        }
+                        Tab("Codes", systemImage: "qrcode") {
+                            CodesView()
+                        }
                     }
-                    Tab("Codes", systemImage: "qrcode") {
-                        CodesView()
+                    .tint(Theme.accent)
+                    .transition(.opacity)
+                } else {
+                    OnboardingView {
+                        withAnimation(.smooth(duration: 0.6)) { didOnboard = true }
                     }
+                    .transition(.opacity)
                 }
-                .tint(Theme.accent)
-                .transition(.opacity)
-            } else {
-                OnboardingView {
-                    withAnimation(.smooth(duration: 0.6)) { didOnboard = true }
-                }
-                .transition(.opacity)
+            }
+            .accessibilityHidden(model.session != nil)
+
+            // A ringing alarm covers everything. It's a layer rather than a presented screen, so it shows
+            // even when another sheet was open (those close themselves, see `dismissOnRing`).
+            if let session = model.session {
+                RingFlowView(session: session)
+                    .id(session.id)
+                    .transition(.opacity)
+                    .zIndex(1)
             }
         }
+        .animation(.smooth(duration: 0.4), value: model.session?.id)
         .font(.sora(.body))
-        .fullScreenCover(item: $model.session) { session in
-            RingFlowView(session: session)
-        }
+        // Night for the setup screens; a ringing alarm picks night or dawn for itself.
+        .preferredColorScheme(model.session?.colorScheme ?? .dark)
         .task {
             await SoundLibrary.installBuiltIns()
             await RingEngine.shared.resyncAll()
             RingEngine.shared.resumeUnfinishedAlarm()
         }
         .task {
+            await AlarmService.watchAlerts { alerting in
+                await RingEngine.shared.alertsChanged(alerting)
+            }
+        }
+        .task {
             while !Task.isCancelled {
+                RingEngine.shared.refreshLocks()
                 model.checkPendingWakeChecks()
                 try? await Task.sleep(for: .seconds(5))
             }

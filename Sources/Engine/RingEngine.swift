@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 /// The wake-up rules: what happens when the alert's buttons are tapped, when a code or tag is
 /// verified, and when the Wake Up Check goes unanswered.
@@ -34,17 +35,52 @@ final class RingEngine {
         } else {
             DiagnosticsLog.add("Re-ring was not booked")
         }
+        refreshLocks()
     }
 
     func openTapped(ringID: UUID) async {
         DiagnosticsLog.add("Prove you're awake tapped (ring \(DiagnosticsLog.short(ringID)))")
         let parent = WakeStore.parent(of: ringID)
         Library.disableIfOneShot(parent)
-        guard !WakeStore.isSatisfied(ringID) else { return }
-        // The app takes over the sound from here; a safety re-ring covers leaving the app.
+        guard !WakeStore.isSatisfied(ringID) else {
+            DiagnosticsLog.add("Already verified, nothing to prove")
+            return
+        }
+        // The app takes over the sound and shows the proof screen first, then books the safety re-ring
+        // that covers leaving the app.
         service.stop(ringID)
-        await scheduleReRing(parent: parent, after: Self.keepAliveLead)
-        AppModel.shared.beginRing(parentID: parent, ringID: ringID)
+        let alarm = Library.snapshot(for: parent) ?? .placeholder(id: parent)
+        AppModel.shared.beginRing(parentID: parent, ringID: ringID, phase: alarm.hasCode ? .verify : .fallback)
+        refreshLocks()
+        if await scheduleReRing(parent: parent, after: Self.keepAliveLead) == nil {
+            DiagnosticsLog.add("Safety re-ring was not booked")
+        }
+    }
+
+    /// AlarmKit's alarm list changed. A ring that starts while the app is in front is taken over by the
+    /// app straight away, whether or not the alert's buttons ever reach the app.
+    func alertsChanged(_ alerting: [UUID]) {
+        refreshLocks()
+        guard UIApplication.shared.applicationState == .active,
+              alerting.contains(where: { !WakeStore.isSatisfied($0) }) else { return }
+        resumeUnfinishedAlarm()
+    }
+
+    /// True while this alarm is ringing, silenced with a re-ring booked, or open in the ringing flow.
+    func isUnfinished(_ parent: UUID) -> Bool {
+        if let session = AppModel.shared.session, session.parentID == parent, session.completedAt == nil {
+            return true
+        }
+        if WakeStore.wakeChecks()[parent] == nil, let pending = WakeStore.pending(for: parent),
+           !WakeStore.isSatisfied(pending), service.knownIDs().contains(pending) {
+            return true
+        }
+        return service.alertingIDs().contains { WakeStore.parent(of: $0) == parent && !WakeStore.isSatisfied($0) }
+    }
+
+    func refreshLocks() {
+        let locked = Set(Library.alarms().map(\.id).filter(isUnfinished))
+        if AppModel.shared.lockedAlarmIDs != locked { AppModel.shared.lockedAlarmIDs = locked }
     }
 
     /// Opening the app while an alarm is silenced (re-ring booked) or still ringing goes straight to
@@ -76,6 +112,7 @@ final class RingEngine {
         let alarm = Library.snapshot(for: parent) ?? .placeholder(id: parent)
         DiagnosticsLog.add("Opened with alarm unfinished (ring \(DiagnosticsLog.short(ringID))), asking for proof")
         AppModel.shared.beginRing(parentID: parent, ringID: ringID, phase: alarm.hasCode ? .verify : .fallback)
+        refreshLocks()
     }
 
     // MARK: Ringing flow
@@ -96,6 +133,7 @@ final class RingEngine {
         Library.disableIfOneShot(parent)
         DiagnosticsLog.add("Verified, re-rings cancelled")
         await scheduleWakeCheck(parent: parent)
+        refreshLocks()
     }
 
     // MARK: NFC (from the Shortcuts automation or the URL scheme)

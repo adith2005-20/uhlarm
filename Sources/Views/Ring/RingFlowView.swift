@@ -29,8 +29,7 @@ struct RingFlowView: View {
         }
         .animation(.smooth(duration: 0.5), value: session.phase)
         .font(.sora(.body))
-        .environment(\.colorScheme, colorScheme)
-        .preferredColorScheme(colorScheme)
+        .environment(\.colorScheme, session.colorScheme)
         .statusBarHidden(session.phase == .verify && session.alarm.method != .nfc)
         // While the flow is open and unverified, keep a re-ring booked a little ahead, so leaving
         // the app (or the phone dying in a drawer) still ends in another alarm.
@@ -53,14 +52,6 @@ struct RingFlowView: View {
 
     private var isVibrating: Bool {
         session.alarm.vibration && session.completedAt == nil && session.phase == .ringing
-    }
-
-    private var colorScheme: ColorScheme {
-        switch session.phase {
-        case .ringing: session.isNightRing ? .dark : .light
-        case .verify, .fallback: .dark
-        case .success, .wakeCheck: session.isNightRing ? .dark : .light
-        }
     }
 
     @ViewBuilder

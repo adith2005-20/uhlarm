@@ -140,6 +140,13 @@ struct Shake: ViewModifier {
 }
 
 extension View {
+    /// Closes this view's sheets and covers the moment an alarm takes over the screen.
+    func dismissOnRing(_ dismiss: @escaping () -> Void) -> some View {
+        onChange(of: AppModel.shared.session?.id) { _, id in
+            if id != nil { dismiss() }
+        }
+    }
+
     func shake(_ trigger: Int, amplitude: CGFloat = 10) -> some View {
         modifier(Shake(trigger: trigger, amplitude: amplitude))
     }

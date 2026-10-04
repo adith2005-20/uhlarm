@@ -102,6 +102,13 @@ final class AlarmService {
 
     // MARK: AlarmKit calls (off the main actor)
 
+    /// Streams the IDs of ringing alarms every time AlarmKit's alarm list changes.
+    nonisolated static func watchAlerts(_ onChange: @escaping @Sendable ([UUID]) async -> Void) async {
+        for await alarms in AlarmManager.shared.alarmUpdates {
+            await onChange(alarms.filter { $0.state == .alerting }.map(\.id))
+        }
+    }
+
     private nonisolated static func askForAuthorization() async -> Bool {
         let state = try? await AlarmManager.shared.requestAuthorization()
         return state == .authorized

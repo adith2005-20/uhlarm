@@ -201,6 +201,7 @@ struct EditAlarmView: View {
     }
 
     private func save() {
+        guard !RingEngine.shared.isUnfinished(draft.id) else { return dismiss() }
         isSaving = true
         let item = Library.alarm(draft.id) ?? {
             let created = AlarmItem(id: draft.id, hour: draft.hour, minute: draft.minute)
@@ -234,7 +235,7 @@ struct EditAlarmView: View {
     }
 
     private func delete() {
-        if let item = Library.alarm(draft.id) {
+        if let item = Library.alarm(draft.id), !RingEngine.shared.isUnfinished(item.id) {
             AlarmService.shared.cancel(item.id)
             context.delete(item)
             try? context.save()

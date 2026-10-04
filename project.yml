@@ -1,3 +1,5 @@
+# The project and target keep the name AlarmKitTest because .github/workflows/build.yml builds
+# that scheme and packages AlarmKitTest.app. The app itself is "Proof of Wake" (display name, bundle ID).
 name: AlarmKitTest
 options:
   bundleIdPrefix: com.adith
@@ -7,18 +9,31 @@ targets:
   AlarmKitTest:
     type: application
     platform: iOS
-    sources: [Sources]
+    sources: [Sources, Resources]
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: AlarmKit Test
-        NSAlarmKitUsageDescription: This test app schedules an alarm to check that AlarmKit works.
-        UILaunchScreen: {}
+        CFBundleDisplayName: Proof of Wake
+        NSAlarmKitUsageDescription: Proof of Wake schedules your alarms so they ring even in Silent mode.
+        NSCameraUsageDescription: The camera scans the QR code or barcode that turns your alarm off.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIAppFonts:
+          - Sora-Light.ttf
+          - Sora-Regular.ttf
+          - Sora-Medium.ttf
+          - Sora-SemiBold.ttf
+          - Sora-Bold.ttf
+        CFBundleURLTypes:
+          - CFBundleURLName: com.adith.proofofwake
+            CFBundleURLSchemes: [proofofwake]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.adith.alarmkittest
+        PRODUCT_BUNDLE_IDENTIFIER: com.adith.proofofwake
         SWIFT_VERSION: "6.0"
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: Accent

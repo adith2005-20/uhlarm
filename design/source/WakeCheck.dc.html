@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wake Up Check</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#9A5200}a:hover{color:#7A4100}
+button{font:inherit;color:inherit;cursor:pointer;margin:0}
+.cloud{position:absolute;filter:blur(8px);background:radial-gradient(30% 42% at 26% 62%,currentColor 95%,transparent 100%),radial-gradient(26% 50% at 50% 44%,currentColor 95%,transparent 100%),radial-gradient(26% 38% at 74% 60%,currentColor 95%,transparent 100%),radial-gradient(46% 24% at 50% 76%,currentColor 95%,transparent 100%);animation:drift 70s ease-in-out infinite alternate}
+.gd{background:linear-gradient(180deg,rgba(255,255,255,0.58),rgba(255,255,255,0.32));border:1px solid rgba(255,255,255,0.85);box-shadow:inset 0 1px 0 #FFFFFF,0 10px 30px rgba(60,90,140,0.16);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%)}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
+@keyframes breathe{0%,100%{opacity:0.75}50%{opacity:1}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; color: #10233A; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; background: #8DBDF0">
+
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, #7FB2EA 0%, #B5D3F1 48%, #F1DCCB 80%, #FFD9B8 100%)">
+    <div style="position: absolute; left: -200px; right: -200px; bottom: -480px; height: 860px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,226,170,0.95), rgba(255,194,122,0.45) 40%, rgba(255,194,122,0) 100%); animation: breathe 4.5s ease-in-out infinite"></div>
+    <div class="cloud" style="color: #FFFFFF; opacity: 0.8; top: 60px; left: 160px; width: 300px; height: 96px; animation-duration: 70s"></div>
+    <div class="cloud" style="color: #FFFFFF; opacity: 0.65; top: 330px; left: -90px; width: 320px; height: 100px; animation-duration: 58s; animation-direction: alternate-reverse"></div>
+    <div class="cloud" style="color: #FFF3E8; opacity: 0.8; top: 640px; left: 150px; width: 300px; height: 96px; animation-duration: 80s"></div>
+  </div>
+
+  <div style="position: absolute; top: 110px; left: 24px; right: 24px; text-align: center">
+    <div style="font-size: 15px; font-weight: 600; color: rgba(16,35,58,0.72)">Wake Up Check</div>
+    <h1 style="margin: 6px 0 0; font-size: 36px; font-weight: 700">Still up?</h1>
+  </div>
+
+  <div class="gd" role="timer" aria-label="48 seconds left" style="position: absolute; left: 75px; top: 220px; width: 240px; height: 240px; border-radius: 50%; box-sizing: border-box; display: flex; align-items: center; justify-content: center">
+    <svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true" style="position: absolute; left: 9px; top: 9px; transform: rotate(-90deg)">
+      <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(16,35,58,0.1)" stroke-width="8"></circle>
+      <circle cx="110" cy="110" r="100" fill="none" stroke="#F29A1F" stroke-width="8" stroke-linecap="round" stroke-dasharray="502.7 628.3"></circle>
+    </svg>
+    <div style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, system-ui, sans-serif; font-size: 64px; font-weight: 400; letter-spacing: -1px">0:48</div>
+  </div>
+
+  <p style="position: absolute; top: 494px; left: 40px; right: 40px; margin: 0; text-align: center; font-size: 17px; line-height: 1.4; color: rgba(16,35,58,0.78)">Tap before the timer ends, or the alarm rings again.</p>
+
+  <div style="position: absolute; left: 24px; right: 24px; bottom: 56px">
+    <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; height: 76px; border-radius: 38px; font-size: 24px; font-weight: 600; text-decoration: none; color: #10233A; background: linear-gradient(180deg, #FFC86A, #FFB547); border: 1px solid rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 12px 30px rgba(200,120,30,0.24)">I'm up</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

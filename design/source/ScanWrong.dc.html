@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scan wrong code</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#FFC46B}a:hover{color:#FFD796}
+button{font:inherit;color:inherit;cursor:pointer;margin:0}
+.g{background:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.07));border:1px solid rgba(255,255,255,0.26);box-shadow:inset 0 1px 0 rgba(255,255,255,0.34),0 10px 30px rgba(0,0,0,0.3);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%)}
+.c{position:absolute;width:40px;height:40px;box-sizing:border-box;border:0 solid #FF7A66}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}45%{transform:translateX(8px)}70%{transform:translateX(-4px)}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; color: #F5F8FF; font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; background: #12110E">
+
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: radial-gradient(110% 65% at 50% 44%, #2E2A24 0%, #18160F 60%, #0D0C0A 100%)"></div>
+  <div aria-hidden="true" style="position: absolute; left: 115px; top: 345px; width: 160px; height: 92px; border-radius: 8px; background: #E9E5DD; transform: rotate(3deg); opacity: 0.9; display: flex; align-items: center; justify-content: center">
+    <svg width="124" height="58" viewBox="0 0 150 72" aria-hidden="true"><path fill="#16140F" d="M0 0h4v72H0zM7 0h2v72H7zM12 0h5v72h-5zM20 0h2v72h-2zM25 0h3v72h-3zM31 0h6v72h-6zM40 0h2v72h-2zM45 0h4v72h-4zM52 0h2v72h-2zM57 0h6v72h-6zM66 0h3v72h-3zM72 0h2v72h-2zM77 0h5v72h-5zM85 0h2v72h-2zM90 0h3v72h-3zM96 0h6v72h-6zM105 0h2v72h-2zM110 0h4v72h-4zM117 0h3v72h-3zM123 0h2v72h-2zM128 0h6v72h-6zM137 0h2v72h-2zM142 0h3v72h-3zM147 0h3v72h-3z"></path></svg>
+  </div>
+
+  <div aria-hidden="true" style="position: absolute; left: 75px; top: 270px; width: 240px; height: 240px; animation: shake 0.45s ease-out 0.3s both">
+    <div class="c" style="left: 0; top: 0; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 20px"></div>
+    <div class="c" style="right: 0; top: 0; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 20px"></div>
+    <div class="c" style="left: 0; bottom: 0; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 20px"></div>
+    <div class="c" style="right: 0; bottom: 0; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 20px"></div>
+  </div>
+
+  <a href="Ringing.dc.html" class="g" aria-label="Back to alarm" style="position: absolute; top: 58px; left: 16px; width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: #F5F8FF; box-sizing: border-box">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+  </a>
+
+  <div style="position: absolute; left: 16px; right: 16px; bottom: 48px; display: flex; flex-direction: column; align-items: center; gap: 14px">
+    <a href="Fallback.dc.html" style="padding: 8px 14px; font-size: 15px; color: rgba(245,248,255,0.72); text-decoration: none">Code missing?</a>
+    <div style="width: 100%; display: flex; gap: 10px; align-items: center">
+      <div class="g" role="alert" style="flex: 1; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600">Not that one</div>
+      <button class="g" aria-label="Flashlight" aria-pressed="false" style="width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8v3l-2 4v11a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V9L8 5z"></path><path d="M12 12v2.5"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

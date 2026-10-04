@@ -64,7 +64,7 @@ struct OnboardingView: View {
                     Button(isLast ? "Not now" : "Skip") {
                         if isLast { onFinish() } else { withAnimation(.smooth) { page = pages.count - 1 } }
                     }
-                    .font(.subheadline.weight(.medium))
+                    .font(.sora(.subheadline, .medium))
                     .foregroundStyle(Theme.inkSecondary)
                     .frame(minHeight: 44)
                 }
@@ -124,9 +124,9 @@ private struct OnboardingPageView: View {
 
                 VStack(spacing: 14) {
                     Text(page.title)
-                        .font(isFirst ? .largeTitle.bold() : .title.bold())
+                        .font(isFirst ? .sora(.largeTitle, .bold) : .sora(.title, .bold))
                     Text(page.body)
-                        .font(.body)
+                        .font(.sora(.body))
                         .foregroundStyle(Theme.inkSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }

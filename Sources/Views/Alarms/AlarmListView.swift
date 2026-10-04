@@ -16,7 +16,7 @@ struct AlarmListView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     TimelineView(.everyMinute) { timeline in
                         Text(NextAlarm.summary(for: snapshots, now: timeline.date))
-                            .font(.subheadline)
+                            .font(.sora(.subheadline))
                             .foregroundStyle(Theme.inkSecondary)
                             .contentTransition(.numericText())
                     }
@@ -104,9 +104,9 @@ private struct EmptyAlarms: View {
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(Theme.accent)
             Text("No alarms yet")
-                .font(.title2.weight(.semibold))
+                .font(.sora(.title2, .semibold))
             Text("Set a time, then pick something you have to get out of bed to scan.")
-                .font(.body)
+                .font(.sora(.body))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Theme.inkSecondary)
             Button("Add Alarm", systemImage: "plus", action: add)
@@ -133,7 +133,7 @@ struct AlarmCard: View {
             if isEditing {
                 Button(role: .destructive, action: onDelete) {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(.sora(.title2))
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.white, Theme.error)
                         .frame(width: 44, height: 44)
@@ -150,7 +150,7 @@ struct AlarmCard: View {
                         .tracking(-1)
                         .minimumScaleFactor(0.5)
                     if let period = parts.period {
-                        Text(period).font(.title3.weight(.medium))
+                        Text(period).font(.sora(.title3, .medium))
                     }
                 }
                 .lineLimit(1)
@@ -194,7 +194,7 @@ struct AlarmCard: View {
                     .foregroundStyle(Theme.accent)
             }
         }
-        .font(.subheadline)
+        .font(.sora(.subheadline))
         .lineLimit(2)
         .foregroundStyle(alarm.isEnabled ? Theme.inkSecondary : Theme.inkTertiary)
     }

@@ -3,6 +3,10 @@ import SwiftUI
 
 @main
 struct ProofOfWakeApp: App {
+    init() {
+        SoraChrome.apply()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
@@ -37,6 +41,7 @@ struct RootView: View {
                 .transition(.opacity)
             }
         }
+        .font(.sora(.body))
         .fullScreenCover(item: $model.session) { session in
             RingFlowView(session: session)
         }

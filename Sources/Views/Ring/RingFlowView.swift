@@ -28,6 +28,7 @@ struct RingFlowView: View {
             }
         }
         .animation(.smooth(duration: 0.5), value: session.phase)
+        .font(.sora(.body))
         .environment(\.colorScheme, colorScheme)
         .preferredColorScheme(colorScheme)
         .statusBarHidden(session.phase == .verify && session.alarm.method != .nfc)
@@ -102,7 +103,7 @@ struct RingingView: View {
 
                 VStack(spacing: 0) {
                     Text(timeline.date, format: .dateTime.weekday(.wide).month(.wide).day())
-                        .font(.title3.weight(.semibold))
+                        .font(.sora(.title3, .semibold))
                         .foregroundStyle(Theme.ink.opacity(0.8))
                     Text(Clock.parts(timeline.date).time)
                         .font(Theme.clock(min(clockSize, 170)))
@@ -112,7 +113,7 @@ struct RingingView: View {
                         .padding(.top, 6)
                         .accessibilityLabel(Clock.string(timeline.date))
                     Text(session.alarm.displayLabel)
-                        .font(.title2.weight(.medium))
+                        .font(.sora(.title2, .medium))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 6)
@@ -160,15 +161,15 @@ struct SuccessView: View {
                     .accessibilityLabel("Alarm dismissed")
 
                 Text("Good morning")
-                    .font(.largeTitle.bold())
+                    .font(.sora(.largeTitle, .bold))
                     .padding(.top, 40)
                 Text("Alarm off at \(Clock.string(session.completedAt ?? .now))")
-                    .font(.body)
+                    .font(.sora(.body))
                     .foregroundStyle(Theme.inkSecondary)
                     .padding(.top, 8)
 
                 Label("Wake Up Check in 5 minutes", systemImage: "bell")
-                    .font(.subheadline.weight(.medium))
+                    .font(.sora(.subheadline, .medium))
                     .padding(.horizontal, 18)
                     .padding(.vertical, 12)
                     .glassEffect(.regular, in: .capsule)
@@ -204,11 +205,11 @@ struct WakeCheckView: View {
 
                 VStack(spacing: 0) {
                     Text("Wake Up Check")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.sora(.subheadline, .semibold))
                         .foregroundStyle(Theme.inkSecondary)
                         .padding(.top, 56)
                     Text("Still up?")
-                        .font(.largeTitle.bold())
+                        .font(.sora(.largeTitle, .bold))
                         .padding(.top, 6)
 
                     ZStack {
@@ -220,7 +221,7 @@ struct WakeCheckView: View {
                             .rotationEffect(.degrees(-90))
                             .animation(.linear(duration: 0.5), value: remaining)
                         Text(Duration.seconds(remaining.rounded(.up)), format: .time(pattern: .minuteSecond))
-                            .font(.system(size: 64, weight: .regular, design: .rounded))
+                            .font(.sora(fixed: 64))
                             .monospacedDigit()
                             .minimumScaleFactor(0.5)
                     }
@@ -232,7 +233,7 @@ struct WakeCheckView: View {
                     .accessibilityLabel("\(Int(remaining.rounded(.up))) seconds left")
 
                     Text("Tap before the timer ends, or the alarm rings again.")
-                        .font(.body)
+                        .font(.sora(.body))
                         .foregroundStyle(Theme.ink.opacity(0.78))
                         .multilineTextAlignment(.center)
                         .padding(.top, 34)

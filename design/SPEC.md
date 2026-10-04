@@ -25,7 +25,7 @@ Source canvas: "Proof-of-Wake Alarm" (Claude design canvas). Screens are numbere
 | success | #30D158 | #248A3D |
 | error / wrong | #FF7A66 | #D9442F |
 
-Type: SF Pro Rounded Light for big clock times (136 pt ringing, 58–60 pt list); SF Pro for everything else (title 34 bold, body 17, secondary 15).
+Type: **Sora** throughout. Sora Light for big clock times (136 pt ringing, 58–60 pt list); Sora Regular body 17, secondary 15; Medium for labels; SemiBold for buttons and titles; Bold for large titles (34). Sizes follow the system text styles and scale with Dynamic Type.
 Radii: cards 28, sheet 38, grouped sections 24, buttons are capsules.
 
 ## SkyView (shared background)

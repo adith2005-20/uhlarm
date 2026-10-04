@@ -33,6 +33,14 @@ Five built-in sounds (Sunrise, Meadow, Bells, Glass Harp, Pulse) are synthesized
 `Library/Sounds`, where AlarmKit plays them. Import your own from Files: it's converted to CAF and
 trimmed to 30 s. The system alarm sound is also available.
 
+## Look
+
+- Typeface: **Sora** (SIL OFL, `Resources/Fonts`), applied through `Font.sora(_:_:)` and to UIKit
+  navigation and tab bar chrome.
+- App icon: "Rising edge", with Any, Dark and Tinted appearances in `Assets.xcassets/AppIcon`. The
+  layered SVGs for an Icon Composer (Liquid Glass) icon are in `design/icon/layers`; exporting that
+  `.icon` file needs Xcode on a Mac.
+
 ## Build and install (no Mac needed)
 
 Every push runs `.github/workflows/build.yml` on a macOS runner. It generates the project with

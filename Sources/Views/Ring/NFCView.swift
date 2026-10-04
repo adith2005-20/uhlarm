@@ -45,7 +45,7 @@ struct NFCView: View {
                     .padding(.top, 48)
                 if mode == .failed {
                     GlassCapsuleButton(title: "Try again", systemImage: "arrow.counterclockwise", height: 52,
-                                       font: .headline, tint: Theme.labelTint) {
+                                       font: .sora(.headline), tint: Theme.labelTint) {
                         withAnimation(.smooth) { mode = .waiting }
                     }
                     .fixedSize()
@@ -55,7 +55,7 @@ struct NFCView: View {
                 Spacer(minLength: 24)
                 if mode != .success, let onMissing {
                     Button("Tag missing or damaged?", action: onMissing)
-                        .font(.subheadline)
+                        .font(.sora(.subheadline))
                         .foregroundStyle(Theme.ink.opacity(0.8))
                         .padding(.horizontal, 16)
                         .frame(minHeight: 44)
@@ -71,6 +71,7 @@ struct NFCView: View {
                     .padding(.top, 8)
             }
         }
+        .font(.sora(.body))
         .environment(\.colorScheme, .dark)
         .sensoryFeedback(.success, trigger: successTick)
         .sensoryFeedback(.error, trigger: failTick)
@@ -153,21 +154,21 @@ struct NFCView: View {
             switch mode {
             case .waiting:
                 Text("Hold your phone to the tag")
-                    .font(.title2.weight(.semibold))
+                    .font(.sora(.title2, .semibold))
                 Text(tagName)
-                    .font(.body)
+                    .font(.sora(.body))
                     .foregroundStyle(Theme.ink.opacity(0.75))
             case .success:
                 Text(successTitle)
-                    .font(.title2.weight(.semibold))
+                    .font(.sora(.title2, .semibold))
                 Text(successSubtitle)
-                    .font(.body)
+                    .font(.sora(.body))
                     .foregroundStyle(Theme.ink.opacity(0.85))
             case .failed:
                 Text("That's not the \(tagName.lowercasingFirstLetter) tag")
-                    .font(.title2.weight(.semibold))
+                    .font(.sora(.title2, .semibold))
                 Text("Hold the top edge of your phone flat against it for a second.")
-                    .font(.body)
+                    .font(.sora(.body))
                     .foregroundStyle(Theme.ink.opacity(0.8))
             }
         }

@@ -28,15 +28,17 @@ struct RegisterCodeView: View {
                 }
                 .listRowBackground(Color.clear)
 
-                Section("Name") {
+                Section {
                     TextField(placeholder, text: $name)
                         .focused($nameFocused)
                         .submitLabel(.done)
                     if let nameProblem {
                         Text(nameProblem)
-                            .font(.footnote)
+                            .font(.sora(.footnote))
                             .foregroundStyle(Theme.error)
                     }
+                } header: {
+                    SectionHeader("Name")
                 }
                 .skyRowBackground()
 
@@ -82,6 +84,7 @@ struct RegisterCodeView: View {
             }
         }
         .tint(Theme.accent)
+        .font(.sora(.body))
     }
 
     // MARK: QR / barcode
@@ -98,7 +101,7 @@ struct RegisterCodeView: View {
                 }
                 if let duplicate {
                     Text("This is already registered as “\(duplicate.name)”.")
-                        .font(.footnote)
+                        .font(.sora(.footnote))
                         .foregroundStyle(Theme.error)
                 }
                 Button("Scan again", systemImage: "arrow.counterclockwise") { isScanning = true }
@@ -112,9 +115,9 @@ struct RegisterCodeView: View {
                 .foregroundStyle(Theme.accent)
             }
         } header: {
-            Text(kind == .qr ? "Code" : "Barcode")
+            SectionHeader(kind == .qr ? "Code" : "Barcode")
         } footer: {
-            Text("Only a fingerprint of the code is stored, never what it says.")
+            SectionFooter("Only a fingerprint of the code is stored, never what it says.")
         }
         .skyRowBackground()
     }
@@ -135,19 +138,21 @@ struct RegisterCodeView: View {
             }
             .foregroundStyle(Theme.accent)
         } header: {
-            Text("Set up the automation")
+            SectionHeader("Set up the automation")
         } footer: {
-            Text("iPhone reads the tag and tells the alarm, so it works without any special permissions. It can also open proofofwake://verify?tag=\(displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") if you write that to the tag instead.")
+            SectionFooter("iPhone reads the tag and tells the alarm, so it works without any special permissions. It can also open proofofwake://verify?tag=\(displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") if you write that to the tag instead.")
         }
         .skyRowBackground()
 
-        Section("Status") {
+        Section {
             LabeledContent("Tag") {
                 TagStatus(isConfirmed: tagConfirmed)
             }
             Button("Test tag", systemImage: "wave.3.right") { isTestingTag = true }
                 .foregroundStyle(Theme.accent)
                 .disabled(trimmedName.isEmpty)
+        } header: {
+            SectionHeader("Status")
         }
         .skyRowBackground()
     }
@@ -226,7 +231,7 @@ private struct StepRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text("\(number)")
-                .font(.subheadline.weight(.bold))
+                .font(.sora(.subheadline, .bold))
                 .foregroundStyle(Theme.accentInk)
                 .frame(width: 26, height: 26)
                 .background(Theme.accent, in: .circle)

@@ -17,7 +17,7 @@ struct CodesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("The things that turn your alarms off. Keep them where you have to get out of bed to reach them.")
-                        .font(.subheadline)
+                        .font(.sora(.subheadline))
                         .foregroundStyle(Theme.inkSecondary)
                         .padding(.horizontal, 4)
 
@@ -85,14 +85,14 @@ struct CodesView: View {
             HStack(spacing: 14) {
                 ForEach(StopMethod.allCases) { kind in
                     Image(systemName: kind.symbol)
-                        .font(.title2)
+                        .font(.sora(.title2))
                         .foregroundStyle(Theme.accent)
                         .frame(width: 56, height: 56)
                         .glassEffect(.regular, in: .circle)
                 }
             }
             Text("Nothing registered yet")
-                .font(.title2.weight(.semibold))
+                .font(.sora(.title2, .semibold))
             Text("Scan a QR code on the kitchen wall, the barcode on your coffee, or set up an NFC sticker on the bathroom mirror.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Theme.inkSecondary)
@@ -137,18 +137,18 @@ private struct CodeCard: View {
             IconTile(systemImage: code.kind.symbol, highlighted: true, size: 48)
             VStack(alignment: .leading, spacing: 4) {
                 Text(code.name)
-                    .font(.title3.weight(.semibold))
+                    .font(.sora(.title3, .semibold))
                 Text(detail)
-                    .font(.subheadline)
+                    .font(.sora(.subheadline))
                     .foregroundStyle(Theme.inkSecondary)
                 if code.kind == .nfc {
                     TagStatus(isConfirmed: code.isConfirmed)
-                        .font(.subheadline)
+                        .font(.sora(.subheadline))
                 }
             }
             Spacer(minLength: 8)
             Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
+                .font(.sora(.footnote, .semibold))
                 .foregroundStyle(Theme.inkTertiary)
                 .accessibilityHidden(true)
         }

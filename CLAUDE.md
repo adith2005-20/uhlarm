@@ -12,7 +12,7 @@ The full visual spec is in `design/SPEC.md`. Screen images are in `design/screen
 2. **AlarmKit is the alarm engine.** Tested on this setup: it schedules and rings through Silent mode.
 3. **The system Stop button silences the alarm completely.** Tested. Scan enforcement therefore needs the re-ring workaround described below.
 4. **iOS 27 / Xcode 27 force Liquid Glass.** Use the system glass (`glassEffect`, `GlassEffectContainer`, `.buttonStyle(.glass)` / `.glassProminent`). Don't fake it with materials or custom blurs, and don't stack glass on glass. Standard controls render larger in 27, so check every layout at the largest Dynamic Type size.
-5. **SwiftUI only, no third-party UI or animation libraries** (no Lottie). SF Pro / SF Pro Rounded and SF Symbols only.
+5. **SwiftUI only, no third-party UI or animation libraries** (no Lottie). Typeface is **Sora** (bundled in `Resources/Fonts`, OFL; use `Font.sora(_:_:)` from `Theme.swift`, never `.system` text styles). SF Symbols for icons.
 
 ## Alarm flow and the re-ring workaround (documented, NOT yet tested: spike this first)
 

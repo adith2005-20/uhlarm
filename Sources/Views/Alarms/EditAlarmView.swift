@@ -78,9 +78,11 @@ struct EditAlarmView: View {
                 }
                 .listRowBackground(Color.clear)
 
-                Section("Repeat") {
+                Section {
                     DayPicker(selection: $draft.weekdays)
                         .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
+                } header: {
+                    SectionHeader("Repeat")
                 }
                 .listRowBackground(Color.clear)
 
@@ -104,13 +106,13 @@ struct EditAlarmView: View {
                 }
                 .skyRowBackground()
 
-                Section("Gentle wake") {
+                Section {
                     Toggle(isOn: $draft.gradualVolume) {
                         Label {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Gradual volume")
                                 Text("Rises over 60 seconds in the app")
-                                    .font(.footnote)
+                                    .font(.sora(.footnote))
                                     .foregroundStyle(Theme.inkSecondary)
                             }
                         } icon: {
@@ -122,15 +124,19 @@ struct EditAlarmView: View {
                         Label("Vibration", systemImage: "iphone.radiowaves.left.and.right")
                             .labelStyle(AccentIconLabelStyle())
                     }
+                } header: {
+                    SectionHeader("Gentle wake")
                 }
                 .skyRowBackground()
 
-                Section("Turn off by") {
+                Section {
                     NavigationLink {
                         StopMethodView(method: $draft.method, codeID: $draft.codeID)
                     } label: {
                         turnOffRow
                     }
+                } header: {
+                    SectionHeader("Turn off by")
                 }
                 .skyRowBackground()
 
@@ -172,6 +178,7 @@ struct EditAlarmView: View {
             }
         }
         .tint(Theme.accent)
+        .font(.sora(.body))
         .sensoryFeedback(.selection, trigger: draft.weekdays)
     }
 
@@ -186,7 +193,7 @@ struct EditAlarmView: View {
                 Text(selectedCode?.name ?? "Choose a \(draft.method.noun)")
                     .foregroundStyle(selectedCode == nil ? Theme.accent : Theme.ink)
                 Text(draft.method.title)
-                    .font(.footnote)
+                    .font(.sora(.footnote))
                     .foregroundStyle(Theme.inkSecondary)
             }
         }
@@ -248,7 +255,7 @@ struct DayPicker: View {
                     if isOn { selection.remove(day) } else { selection.insert(day) }
                 } label: {
                     Text(Weekdays.letter(day))
-                        .font(.body.weight(.semibold))
+                        .font(.sora(.body, .semibold))
                         .minimumScaleFactor(0.6)
                         .foregroundStyle(isOn ? Theme.accentInk : Theme.inkSecondary)
                         .frame(width: 44, height: 44)

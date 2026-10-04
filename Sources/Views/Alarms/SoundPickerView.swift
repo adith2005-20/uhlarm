@@ -12,8 +12,10 @@ struct SoundPickerView: View {
 
     var body: some View {
         Form {
-            Section("Sounds") {
+            Section {
                 ForEach(SoundLibrary.builtIns) { sound in row(sound) }
+            } header: {
+                SectionHeader("Sounds")
             }
             .skyRowBackground()
 
@@ -34,9 +36,9 @@ struct SoundPickerView: View {
                 .foregroundStyle(Theme.accent)
                 .disabled(isConverting)
             } header: {
-                Text("Your sounds")
+                SectionHeader("Your sounds")
             } footer: {
-                Text("Any song or recording works. Alarms play the first 30 seconds, on repeat.")
+                SectionFooter("Any song or recording works. Alarms play the first 30 seconds, on repeat.")
             }
             .skyRowBackground()
         }
@@ -67,13 +69,13 @@ struct SoundPickerView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(sound.name).foregroundStyle(Theme.ink)
                     Text(sound.detail)
-                        .font(.footnote)
+                        .font(.sora(.footnote))
                         .foregroundStyle(Theme.inkSecondary)
                 }
                 Spacer(minLength: 8)
                 if sound.id == selection {
                     Image(systemName: "checkmark")
-                        .font(.body.weight(.semibold))
+                        .font(.sora(.body, .semibold))
                         .foregroundStyle(Theme.accent)
                 }
             }

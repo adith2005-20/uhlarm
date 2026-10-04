@@ -68,7 +68,7 @@ struct FallbackView: View {
             }
             Spacer()
             Text("Emergency unlock")
-                .font(.headline)
+                .font(.sora(.headline))
             Spacer()
             Color.clear.frame(width: 44, height: 44)
         }
@@ -79,18 +79,18 @@ struct FallbackView: View {
         VStack(alignment: .leading, spacing: 0) {
             if waitDone {
                 Text("Type this sentence")
-                    .font(.title.bold())
+                    .font(.sora(.title, .bold))
                 Text(sentence)
-                    .font(.title3)
+                    .font(.sora(.title3))
                     .foregroundStyle(Theme.ink.opacity(0.92))
                     .padding(.top, 14)
                     .accessibilityLabel("Sentence: \(sentence)")
                 Text("Your typing")
-                    .font(.footnote.weight(.semibold))
+                    .font(.sora(.footnote, .semibold))
                     .foregroundStyle(Theme.inkSecondary)
                     .padding(.top, 20)
                 TextField("Start typing", text: $typed, axis: .vertical)
-                    .font(.title3)
+                    .font(.sora(.title3))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .keyboardType(.asciiCapable)
@@ -109,14 +109,14 @@ struct FallbackView: View {
                         if new.count > old.count + 1 { typed = old }
                     }
                 Text("Paste is off. The alarm keeps ringing, quieter, until you finish.")
-                    .font(.subheadline)
+                    .font(.sora(.subheadline))
                     .foregroundStyle(Theme.inkSecondary)
                     .padding(.top, 14)
             } else {
                 Text("Take a breath")
-                    .font(.title.bold())
+                    .font(.sora(.title, .bold))
                 Text("Without your \(session.alarm.method.noun), you can still turn the alarm off. It just takes a little longer, on purpose.")
-                    .font(.title3)
+                    .font(.sora(.title3))
                     .foregroundStyle(Theme.ink.opacity(0.92))
                     .padding(.top, 14)
                 Text(Duration.seconds(remaining.rounded(.up)), format: .time(pattern: .minuteSecond))
@@ -139,7 +139,7 @@ struct FallbackView: View {
                 Image(systemName: enabled ? "lock.open.fill" : "lock.fill")
                 Text("Hold to turn off")
             }
-            .font(.title2.weight(.semibold))
+            .font(.sora(.title2, .semibold))
             .foregroundStyle(enabled ? Theme.ink : Theme.ink.opacity(0.5))
             .frame(maxWidth: .infinity, minHeight: 76)
             .background(alignment: .leading) {
@@ -170,7 +170,7 @@ struct FallbackView: View {
             }
 
             Text(enabled ? "Keep holding for 3 seconds" : "Unlocks once the sentence matches")
-                .font(.subheadline)
+                .font(.sora(.subheadline))
                 .foregroundStyle(Theme.inkSecondary)
         }
     }
@@ -195,14 +195,14 @@ private struct StepBar: View {
                 HStack(spacing: 6) {
                     if index < step {
                         Image(systemName: "checkmark")
-                            .font(.caption.weight(.bold))
+                            .font(.sora(.caption, .bold))
                             .foregroundStyle(Theme.success)
                     }
                     Text(titles[index])
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                 }
-                .font(.subheadline.weight(.semibold))
+                .font(.sora(.subheadline, .semibold))
                 .foregroundStyle(index == step ? Theme.accent : Theme.ink.opacity(index < step ? 0.72 : 0.55))
                 .frame(maxWidth: .infinity, minHeight: 40)
                 .background(index == step ? Theme.accent.opacity(0.22) : .clear, in: .capsule)

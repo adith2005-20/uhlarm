@@ -56,6 +56,7 @@ struct ScanView: View {
                 .padding(.top, 8)
         }
         .overlay(alignment: .bottom) { bottomBar }
+        .font(.sora(.body))
         .environment(\.colorScheme, .dark)
         .sensoryFeedback(.success, trigger: matchCount)
         .sensoryFeedback(.error, trigger: wrongCount)
@@ -101,7 +102,7 @@ struct ScanView: View {
         VStack(spacing: 14) {
             if showMissing, let onMissing, state != .matched {
                 Button("Code missing?", action: onMissing)
-                    .font(.subheadline)
+                    .font(.sora(.subheadline))
                     .foregroundStyle(Theme.inkSecondary)
                     .padding(.horizontal, 14)
                     .frame(minHeight: 44)
@@ -110,7 +111,7 @@ struct ScanView: View {
             GlassEffectContainer(spacing: 10) {
                 HStack(spacing: 10) {
                     Text(pillText)
-                        .font(.headline)
+                        .font(.sora(.headline))
                         .foregroundStyle(Theme.ink)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
@@ -126,7 +127,7 @@ struct ScanView: View {
                             Torch.set(torchOn)
                         } label: {
                             Image(systemName: torchOn ? "flashlight.on.fill" : "flashlight.off.fill")
-                                .font(.title3)
+                                .font(.sora(.title3))
                                 .foregroundStyle(torchOn ? Theme.accent : Theme.ink)
                                 .frame(width: 56, height: 56)
                                 .contentShape(.circle)
@@ -148,9 +149,9 @@ struct ScanView: View {
     private var unavailable: some View {
         VStack(spacing: 12) {
             Image(systemName: "camera.fill")
-                .font(.largeTitle)
+                .font(.sora(.largeTitle))
             Text("Camera unavailable")
-                .font(.title3.weight(.semibold))
+                .font(.sora(.title3, .semibold))
             Text("Allow camera access for Proof of Wake in Settings to scan codes.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Theme.inkSecondary)

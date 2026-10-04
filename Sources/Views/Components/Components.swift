@@ -14,7 +14,7 @@ struct AccentButton: View {
             } icon: {
                 if let systemImage { Image(systemName: systemImage) }
             }
-            .font(height >= 70 ? .title2.weight(.semibold) : .headline)
+            .font(height >= 70 ? .sora(.title2, .semibold) : .sora(.headline))
             .foregroundStyle(Theme.accentInk)
             .frame(maxWidth: .infinity, minHeight: height)
             .contentShape(.capsule)
@@ -32,7 +32,7 @@ struct GlassCapsuleButton: View {
     let title: String
     var systemImage: String?
     var height: CGFloat = 76
-    var font: Font = .title.weight(.semibold)
+    var font: Font = .sora(.title, .semibold)
     var tint: Color? = Theme.labelTint
     let action: () -> Void
 
@@ -64,7 +64,7 @@ struct GlassIconButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.body.weight(.semibold))
+                .font(.sora(.body, .semibold))
                 .foregroundStyle(Theme.ink)
                 .frame(width: size, height: size)
                 .contentShape(.circle)

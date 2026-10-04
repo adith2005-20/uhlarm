@@ -14,7 +14,7 @@ struct StopMethodView: View {
         Form {
             Section {
                 Text("Pick something you have to get out of bed to reach. The alarm only stops when you scan or tap it.")
-                    .font(.body)
+                    .font(.sora(.body))
                     .foregroundStyle(Theme.inkSecondary)
                     .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
             }
@@ -30,13 +30,13 @@ struct StopMethodView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(option.title).foregroundStyle(Theme.ink)
                                 Text(option.subtitle)
-                                    .font(.footnote)
+                                    .font(.sora(.footnote))
                                     .foregroundStyle(Theme.inkSecondary)
                             }
                             Spacer(minLength: 8)
                             if option == method {
                                 Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
+                                    .font(.sora(.body, .semibold))
                                     .foregroundStyle(Theme.accent)
                             }
                         }
@@ -58,7 +58,7 @@ struct StopMethodView: View {
                             Spacer()
                             if code.id == codeID {
                                 Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
+                                    .font(.sora(.body, .semibold))
                                     .foregroundStyle(Theme.accent)
                             }
                         }
@@ -77,10 +77,10 @@ struct StopMethodView: View {
                 }
                 .foregroundStyle(Theme.accent)
             } header: {
-                Text(method == .nfc ? "Your tag" : "Your \(method.noun)")
+                SectionHeader(method == .nfc ? "Your tag" : "Your \(method.noun)")
             } footer: {
                 if method == .nfc {
-                    Text("Tags work through a Shortcuts automation. Registering walks you through it.")
+                    SectionFooter("Tags work through a Shortcuts automation. Registering walks you through it.")
                 }
             }
             .skyRowBackground()

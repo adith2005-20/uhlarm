@@ -45,9 +45,105 @@ enum Theme {
     /// AlarmKit encodes its tint into the alarm, so it needs a concrete color rather than an asset reference.
     static let alarmTint = Color(red: 1.0, green: 0.769, blue: 0.420)
 
-    /// SF Pro Rounded Light for the big clock times.
+    /// Sora Light for the big clock times.
     static func clock(_ size: CGFloat) -> Font {
-        .system(size: size, weight: .light, design: .rounded)
+        .sora(fixed: size, .light)
+    }
+}
+
+// MARK: - Sora
+
+/// The app's typeface. Fonts ship in Resources/Fonts and are registered through UIAppFonts.
+enum SoraWeight: String {
+    case light = "Sora-Light"
+    case regular = "Sora-Regular"
+    case medium = "Sora-Medium"
+    case semibold = "Sora-SemiBold"
+    case bold = "Sora-Bold"
+}
+
+extension Font {
+    /// Sora at the size of a system text style, scaling with Dynamic Type like the style it mirrors.
+    static func sora(_ style: Font.TextStyle, _ weight: SoraWeight? = nil) -> Font {
+        .custom((weight ?? style.soraDefaultWeight).rawValue, size: style.soraSize, relativeTo: style)
+    }
+
+    /// Sora at a fixed size, for the big clock faces that size themselves.
+    static func sora(fixed size: CGFloat, _ weight: SoraWeight = .regular) -> Font {
+        .custom(weight.rawValue, fixedSize: size)
+    }
+}
+
+extension Font.TextStyle {
+    var soraSize: CGFloat {
+        switch self {
+        case .largeTitle: 34
+        case .title: 28
+        case .title2: 22
+        case .title3: 20
+        case .headline: 17
+        case .body: 17
+        case .callout: 16
+        case .subheadline: 15
+        case .footnote: 13
+        case .caption: 12
+        case .caption2: 11
+        default: 17
+        }
+    }
+
+    var soraDefaultWeight: SoraWeight {
+        self == .headline ? .semibold : .regular
+    }
+}
+
+/// UIKit-drawn chrome (navigation bar titles, tab bar labels) doesn't read SwiftUI's font,
+/// so it gets Sora through appearance proxies, scaled for Dynamic Type.
+@MainActor
+enum SoraChrome {
+    static func apply() {
+        if let large = scaled(.bold, 34, .largeTitle), let inline = scaled(.semibold, 17, .headline) {
+            UINavigationBar.appearance().largeTitleTextAttributes = [.font: large]
+            UINavigationBar.appearance().titleTextAttributes = [.font: inline]
+        }
+        if let tab = scaled(.medium, 10, .caption2) {
+            UITabBarItem.appearance().setTitleTextAttributes([.font: tab], for: .normal)
+            UITabBarItem.appearance().setTitleTextAttributes([.font: tab], for: .selected)
+        }
+        if let bar = scaled(.medium, 17, .body) {
+            UIBarButtonItem.appearance().setTitleTextAttributes([.font: bar], for: .normal)
+        }
+    }
+
+    private static func scaled(_ weight: SoraWeight, _ size: CGFloat, _ style: UIFont.TextStyle) -> UIFont? {
+        UIFont(name: weight.rawValue, size: size).map { UIFontMetrics(forTextStyle: style).scaledFont(for: $0) }
+    }
+}
+
+/// A Form section header in Sora, sentence case.
+struct SectionHeader: View {
+    let title: String
+
+    init(_ title: String) { self.title = title }
+
+    var body: some View {
+        Text(title)
+            .font(.sora(.subheadline, .semibold))
+            .foregroundStyle(Theme.inkSecondary)
+            .textCase(nil)
+    }
+}
+
+/// A Form section footer in Sora.
+struct SectionFooter: View {
+    let text: String
+
+    init(_ text: String) { self.text = text }
+
+    var body: some View {
+        Text(text)
+            .font(.sora(.footnote))
+            .foregroundStyle(Theme.inkSecondary)
     }
 }
 

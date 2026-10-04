@@ -19,6 +19,12 @@ targets:
         UILaunchScreen:
           UIColorName: LaunchBackground
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIAppFonts:
+          - Sora-Light.ttf
+          - Sora-Regular.ttf
+          - Sora-Medium.ttf
+          - Sora-SemiBold.ttf
+          - Sora-Bold.ttf
         CFBundleURLTypes:
           - CFBundleURLName: com.adith.proofofwake
             CFBundleURLSchemes: [proofofwake]

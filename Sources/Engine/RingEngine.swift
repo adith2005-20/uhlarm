@@ -1,6 +1,6 @@
 import Foundation
 
-/// The proof-of-wake rules: what happens when the alert's buttons are tapped, when a code or tag is
+/// The wake-up rules: what happens when the alert's buttons are tapped, when a code or tag is
 /// verified, and when the Wake Up Check goes unanswered.
 @MainActor
 final class RingEngine {

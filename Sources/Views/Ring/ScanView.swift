@@ -152,7 +152,7 @@ struct ScanView: View {
                 .font(.sora(.largeTitle))
             Text("Camera unavailable")
                 .font(.sora(.title3, .semibold))
-            Text("Allow camera access for Proof of Wake in Settings to scan codes.")
+            Text("Allow camera access for uhlarm in Settings to scan codes.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Theme.inkSecondary)
         }

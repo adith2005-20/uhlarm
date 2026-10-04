@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 @main
-struct ProofOfWakeApp: App {
+struct UhlarmApp: App {
     init() {
         SoraChrome.apply()
     }
@@ -59,8 +59,8 @@ struct RootView: View {
             if phase == .active { model.checkPendingWakeChecks() }
         }
         .onOpenURL { url in
-            // proofofwake://verify?tag=Bathroom%20mirror — for tags that open a URL instead of a shortcut.
-            guard url.scheme == "proofofwake", url.host() == "verify",
+            // uhlarm://verify?tag=Bathroom%20mirror — for tags that open a URL instead of a shortcut.
+            guard url.scheme == "uhlarm", url.host() == "verify",
                   let tag = URLComponents(url: url, resolvingAgainstBaseURL: false)?
                     .queryItems?.first(where: { $0.name == "tag" })?.value else { return }
             Task { await RingEngine.shared.tagScanned(named: tag) }

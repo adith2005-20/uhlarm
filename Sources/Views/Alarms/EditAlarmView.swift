@@ -171,7 +171,7 @@ struct EditAlarmView: View {
                 }
                 Button("Not Now", role: .cancel) { dismiss() }
             } message: {
-                Text("Your alarm is saved, but it can't ring until you allow Proof of Wake to schedule alarms in Settings.")
+                Text("Your alarm is saved, but it can't ring until you allow uhlarm to schedule alarms in Settings.")
             }
             .confirmationDialog("Delete this alarm?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete Alarm", role: .destructive) { delete() }

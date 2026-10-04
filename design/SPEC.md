@@ -1,6 +1,6 @@
 # Design spec
 
-Source canvas: "Proof-of-Wake Alarm" (Claude design canvas). Screens are numbered as on the canvas.
+Source canvas: "Proof-of-Wake Alarm" (Claude design canvas; Proof of Wake was the working name for uhlarm). Screens are numbered as on the canvas.
 
 ## Look
 

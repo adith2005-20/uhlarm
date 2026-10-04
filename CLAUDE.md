@@ -1,4 +1,4 @@
-# Proof-of-Wake (working name)
+# uhlarm
 
 An iOS 27 alarm app. The alarm only counts as stopped once the user proves they're awake by scanning a registered QR code or barcode, or by tapping an NFC tag (e.g. on the bathroom mirror). Inspired by Alarmy, but calmer: minimal screens, a sky that moves, Liquid Glass throughout.
 
@@ -36,7 +36,7 @@ AlarmKit alert (system UI)
 | QR code | VisionKit `DataScannerViewController`, `recognizedDataTypes: [.barcode(symbologies: [.qr])]` | Should work on a free account |
 | Any barcode | Same scanner, all symbologies | Should work on a free account |
 | NFC tag | **No Core NFC.** The app exposes an App Intent `VerifyTagIntent(tagName:)` through `AppShortcutsProvider`. The user creates a Shortcuts Personal Automation: *When NFC tag "Bathroom mirror" is scanned → Run VerifyTagIntent*. The intent marks the alarm verified and brings the app forward to play the NFC success animation. | Untested |
-| NFC fallback idea | Write a custom-URL-scheme record (`proofofwake://verify?tag=mirror`) to the tag and handle it with `onOpenURL` | Untested; may not open custom schemes |
+| NFC fallback idea | Write a custom-URL-scheme record (`uhlarm://verify?tag=mirror`) to the tag and handle it with `onOpenURL` | Untested; may not open custom schemes |
 
 Store a SHA-256 of the scanned payload + symbology, never the raw payload.
 

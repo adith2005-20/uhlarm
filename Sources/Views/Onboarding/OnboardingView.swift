@@ -10,7 +10,7 @@ struct OnboardingView: View {
     private let pages: [OnboardingPage] = [
         OnboardingPage(
             symbols: ["sunrise.fill"],
-            title: "Proof of Wake",
+            title: "uhlarm",
             body: "An alarm that only goes quiet once you're truly up. Calm screens, a sky that moves, and no way to snooze from under the covers."
         ),
         OnboardingPage(
